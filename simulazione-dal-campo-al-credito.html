@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Simulazione "Lo stack digitale del credito" — 60' + debrief</title>
+<style>
+  :root{--green:#0e7a52; --dark:#15302a; --dim:#5a6f68; --line:#cfe0d9; --bg:#f4f8f6;}
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; color:var(--dark); background:#e8eeec; line-height:1.5;}
+  .page{background:#fff; max-width:820px; margin:24px auto; padding:40px 46px; border-radius:6px; box-shadow:0 2px 14px rgba(0,0,0,.08);}
+  h1{font-size:1.45rem; color:var(--green);}
+  h2{font-size:1.1rem; color:var(--green); margin:18px 0 8px; padding-bottom:5px; border-bottom:2px solid var(--line);}
+  h3{font-size:.95rem; margin:14px 0 5px;}
+  p,li{font-size:.89rem;} ul,ol{margin:6px 0 6px 20px;}
+  .kicker{font-size:.7rem; text-transform:uppercase; letter-spacing:.14em; color:var(--dim); margin-bottom:6px;}
+  .secret{background:#fdf3e3; border:1px dashed #d9a23c; border-radius:8px; padding:12px 16px; margin-top:14px;}
+  .secret h3{margin-top:0; color:#a36a0a;}
+  .box{background:var(--bg); border:1px solid var(--line); border-radius:8px; padding:13px 17px; margin:12px 0;}
+  .round{border-left:4px solid var(--green); background:var(--bg); border-radius:0 8px 8px 0; padding:12px 16px; margin:10px 0;}
+  .round h3{margin:0 0 4px; color:var(--green);}
+  table{width:100%; border-collapse:collapse; margin:10px 0; font-size:.83rem;}
+  th,td{border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top;}
+  th{background:var(--bg); font-size:.75rem; text-transform:uppercase; letter-spacing:.05em; color:var(--dim);}
+  td b{color:var(--green);}
+  .role-emoji{font-size:2rem;}
+  .meta{font-size:.78rem; color:var(--dim); margin-top:4px;}
+  .scissors{max-width:820px; margin:0 auto 24px; text-align:center; color:var(--dim); font-size:.8rem;}
+  .fill{border-bottom:1.5px solid var(--dark); display:inline-block; min-width:120px;}
+  .bigfill{border:1.5px solid var(--line); border-radius:6px; min-height:34px; margin:4px 0 10px;}
+  .check{font-size:1rem; letter-spacing:.02em;}
+  @media print{
+    body{background:#fff;}
+    .page{box-shadow:none; margin:0; max-width:none; border-radius:0; page-break-after:always; padding:20px 28px;}
+    .scissors,.noprint{display:none;}
+  }
+  .printbtn{position:fixed; top:14px; right:14px; background:var(--green); color:#fff; border:none; padding:10px 18px; border-radius:8px; font-size:.85rem; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.2);}
+</style>
+</head>
+<body>
+<button class="printbtn noprint" onclick="window.print()">🖨 Stampa / PDF</button>
+
+<!-- ========== PAG 1: REGOLE PER GLI STUDENTI (da proiettare/distribuire a tutti) ========== -->
+<div class="page">
+  <p class="kicker">Per tutti i partecipanti · Leggere insieme prima di iniziare</p>
+  <h1>🎲 Lo stack digitale del credito — come si gioca</h1>
+
+  <h2>La storia</h2>
+  <p>L'<b>Azienda Agricola Valdichiara</b> (250 ha) adotta cover crops e minima lavorazione: il suolo assorbirà circa <b>200 tonnellate di CO₂ all'anno</b>. Queste tonnellate possono diventare <b>crediti di carbonio</b> e essere vendute. Ma nessuno paga per crediti che non si possono dimostrare: serve un sistema digitale che misuri, certifichi e registri tutto.</p>
+  <p><b>Il problema:</b> ogni scelta tecnologica costa, e cambia chi guadagna, chi rischia e chi controlla i dati. Nessuno dei quattro gruppi può decidere da solo. Se non firmate tutti il contratto finale, il progetto salta: <b>tutti a zero</b>.</p>
+
+  <h2>I quattro gruppi</h2>
+  <table>
+    <tr><th>Gruppo</th><th>Chi è</th><th>Cosa vuole (in pubblico)</th></tr>
+    <tr><td>🚜 <b>Agricoltori</b></td><td>Azienda Valdichiara</td><td>Guadagnare dai crediti; capire di chi sono i dati del campo</td></tr>
+    <tr><td>📊 <b>TerraProof</b></td><td>Fornitore di tecnologia dMRV</td><td>Vendere il suo sistema di monitoraggio (più ne vende, meglio è)</td></tr>
+    <tr><td>🔍 <b>CertCarbon</b></td><td>Verificatore indipendente</td><td>Dati affidabili e ispezionabili: la sua firma crea i crediti</td></tr>
+    <tr><td>🏢 <b>Buongusto S.p.A.</b></td><td>Compratore (gruppo alimentare)</td><td>Crediti tracciabili e difendibili dalle accuse di greenwashing</td></tr>
+  </table>
+  <p>Ogni gruppo riceve una scheda con una sezione 🔒 <b>riservata</b> (obiettivi e soglie segrete): non mostratela.</p>
+
+  <h2>Come si gioca: 4 round, 4 decisioni</h2>
+  <div class="round"><h3>Round 1 (10') — Quanta tecnologia di misura?</h3><p>Scegliete lo <b>Stack A</b> (solo satellite + AI: economico, impreciso) o lo <b>Stack B</b> (+ sensori IoT in campo: costoso, preciso). La precisione determina <b>quanti crediti</b> il verificatore potrà emettere. Decidete anche <b>chi paga</b>.</p></div>
+  <div class="round"><h3>Round 2 (10') — Di chi sono i dati?</h3><p><b>D1</b>: i dati restano chiusi nella piattaforma di TerraProof. <b>D2</b>: i dati sono dell'agricoltore, esportabili, e il verificatore accede al dato grezzo (+500 €/anno). Attenzione: questa decisione vale più di quanto sembri.</p></div>
+  <div class="round"><h3>Round 3 (10') — Quale registro per i crediti?</h3><p><b>R1</b>: registro tradizionale del certificatore (gratis, consultabile su richiesta). <b>R2</b>: registro blockchain (+800 €/anno) — chiunque può verificare pubblicamente che un credito sia stato ritirato una sola volta. Con R2 potete attivare lo <b>smart contract</b>: pagamento automatico alla verifica.</p></div>
+  <div class="round"><h3>Round 4 (15') — Prezzo e firma</h3><p>Negoziate il <b>prezzo a credito</b> e <b>chi paga ciascun costo</b>. Compilate il contratto (foglio apposito), fate i conti e firmate tutti e quattro. Poi 5' per controllare i numeri.</p></div>
+
+  <div class="box"><b>Regola d'oro:</b> ogni round si chiude con la decisione <u>scritta sul contratto</u>. Si può riaprire una decisione nei round successivi solo se tutti e quattro i gruppi sono d'accordo.</div>
+</div>
+
+<!-- ========== PAG 2: DATI CONDIVISI ========== -->
+<div class="page">
+  <p class="kicker">Foglio dati condiviso · Visibile a tutti i gruppi · Tenere sul tavolo</p>
+  <h1>📋 I numeri del progetto Valdichiara</h1>
+  <div class="box"><p>Sequestro stimato: <b>200 t CO₂e/anno</b> · Costo delle nuove pratiche agricole (a carico dell'agricoltore): <b>3.000 €/anno</b> · Impegno: 5 anni (tutti i numeri sono per 1 anno).</p></div>
+
+  <h2>Round 1 — Le due offerte di TerraProof</h2>
+  <table>
+    <tr><th></th><th>Stack A · Satellite + AI</th><th>Stack B · + sensori IoT</th></tr>
+    <tr><td>Tecnologia</td><td>Immagini Sentinel-2 + modello AI regionale</td><td>A + sonde di suolo via LoRaWAN + campionamenti di calibrazione</td></tr>
+    <tr><td>Incertezza della stima</td><td>±35%</td><td>±15%</td></tr>
+    <tr><td>Buffer del verificatore</td><td>25% → <b>150 crediti</b></td><td>10% → <b>180 crediti</b></td></tr>
+    <tr><td>Costo annuo</td><td><b>2.000 €</b></td><td><b>5.500 €</b></td></tr>
+  </table>
+
+  <h2>Round 2 — I dati</h2>
+  <table>
+    <tr><th>D1 · Piattaforma chiusa</th><th>D2 · Dati portabili</th></tr>
+    <tr><td>Dati grezzi sulla piattaforma TerraProof; gli altri vedono solo i report. Incluso nel prezzo.</td><td>I dati sono dell'agricoltore, esportabili via API; il verificatore accede al grezzo. <b>+500 €/anno</b>.</td></tr>
+  </table>
+
+  <h2>Round 3 — Il registro</h2>
+  <table>
+    <tr><th>R1 · Tradizionale</th><th>R2 · Blockchain</th></tr>
+    <tr><td>Database del certificatore. Gratis.</td><td>Token con storia pubblica, retirement verificabile da chiunque. <b>+800 €/anno</b>. Abilita lo smart contract (pagamento automatico alla verifica). Richiede Stack B.</td></tr>
+  </table>
+
+  <h2>Round 4 — Il mercato</h2>
+  <table>
+    <tr><td>Prezzo di mercato dei crediti agricoli UE</td><td><b>30–45 €/credito</b> (i crediti "alta integrità" spuntano fino a +40%)</td></tr>
+  </table>
+
+  <h2>Promemoria conti (per il Round 4)</h2>
+  <div class="box">
+    <p><b>Ricavo</b> = crediti emessi × prezzo &nbsp;·&nbsp; <b>Costi totali</b> = stack + eventuali D2 e R2 &nbsp;·&nbsp; <b>Netto agricoltore</b> = ricavo − quota costi a suo carico − 3.000 € di pratiche.</p>
+    <p style="margin-top:6px;"><i>Esempio (solo per capire il meccanismo): Stack A, prezzo 30 €, tutto a carico dell'agricoltore → 150 × 30 = 4.500 − 2.000 − 3.000 = <b>−500 €: in perdita!</b> Trovate voi una combinazione migliore.</i></p>
+  </div>
+</div>
+
+<!-- ========== PAG 3: FACILITATORE ========== -->
+<div class="page">
+  <p class="kicker">Solo per il docente · Copione round per round</p>
+  <h1>🎬 Guida del facilitatore (60' + 15' debrief)</h1>
+
+  <h2>Prima di iniziare (10' — lettura)</h2>
+  <ul>
+    <li>Proietta/leggi la pagina "Come si gioca". Consegna: schede ruolo (1 per gruppo), foglio dati (a tutti), contratto (1 copia al tavolo).</li>
+    <li>Disponi i 4 gruppi a isole; il contratto sta su un tavolo centrale "del notaio".</li>
+    <li>Avvia il timer nella dashboard: le fasi cambiano da sole.</li>
+  </ul>
+
+  <h2>Round 1 — Stack (10')</h2>
+  <ul>
+    <li><b>Lancia così:</b> «TerraProof, presentate le due offerte. Verificatore, dite subito quanti crediti emettereste con ciascuna.»</li>
+    <li><b>Cosa succederà:</b> il verificatore (scheda 🔒) rivelerà che sopra ±30% di incertezza può rifiutare la certificazione → pressione verso B. L'agricoltore non vorrà pagare 5.500 € da solo.</li>
+    <li><b>Se si bloccano:</b> suggerisci «chi beneficia della precisione? Forse non solo l'agricoltore…» (il buyer può co-finanziare).</li>
+    <li><b>Chiudi:</b> stack scelto + chi paga, scritto sul contratto.</li>
+  </ul>
+
+  <h2>Round 2 — Dati (10')</h2>
+  <ul>
+    <li><b>Lancia così:</b> «I sensori sono nel campo di Valdichiara, ma i dati arrivano sui server di TerraProof. Di chi sono?»</li>
+    <li><b>Cosa succederà:</b> TerraProof difenderà D1 ("più semplice"); il verificatore pretenderà l'accesso al grezzo (per lui è non negoziabile); l'agricoltore scoprirà che i suoi dati hanno valore.</li>
+    <li><b>Momento didattico:</b> se nessuno lo dice, chiedi: «Cosa può fare TerraProof con i dati aggregati di 100 aziende come Valdichiara?» (Allenare i modelli: è il suo vero asset.)</li>
+  </ul>
+
+  <h2>Round 3 — Registro (10')</h2>
+  <ul>
+    <li><b>Lancia così:</b> «Buongusto: tre anni fa un giornale vi ha accusato di comprare crediti fantasma. Cosa vi serve perché non riaccada?»</li>
+    <li><b>Cosa succederà:</b> il buyer spingerà per R2 (retirement pubblico = difesa anti-greenwashing) e pagherà premio. Sul tema smart contract, il verificatore ha in scheda la domanda chiave: <i>«lo smart contract paga sul dato — e se il dato è sbagliato?»</i> (problema dell'oracolo, momento clou della lezione).</li>
+  </ul>
+
+  <h2>Round 4 — Prezzo e firma (15' + 5')</h2>
+  <ul>
+    <li>Tutti al tavolo del notaio. Compilano il contratto voce per voce e fanno i conti ad alta voce.</li>
+    <li><b>Spazio dell'accordo (orientativo):</b> B + D2 + R2 → 180 crediti. Costi: 5.500+500+800 = 6.800 €. Il buyer (scheda 🔒) paga fino a 50 €/credito con questa combinazione e può co-finanziare fino a 3.300 €. L'agricoltore firma solo sopra 3.500 € netti. Le soluzioni possibili sono più d'una — va bene così.</li>
+    <li>Ultimi 5': verifica i conti, firme, applausi.</li>
+  </ul>
+
+  <h2>Debrief (15')</h2>
+  <ol>
+    <li>Ogni gruppo, 1 minuto: «la decisione più difficile e perché».</li>
+    <li>Domande guida: quanto avete pagato ogni punto di incertezza in meno? Di chi sono i dati del campo — e chi se n'è preoccupato per primo? Il registro blockchain valeva 800 €? Cosa comprava davvero il buyer? Chi temeva lo smart contract, e cos'è il problema dell'oracolo visto da dentro?</li>
+    <li>Chiudi sul messaggio della lezione: <b>le scelte digitali sono scelte economiche</b> — il sensore misura, l'AI stima, la blockchain certifica e paga, ma è il suolo che sequestra.</li>
+  </ol>
+</div>
+
+<!-- ========== PAG 4: AGRICOLTORI ========== -->
+<div class="page">
+  <p class="kicker">Scheda ruolo · Gruppo 1</p>
+  <h1><span class="role-emoji">🚜</span> Agricoltori — Azienda Valdichiara</h1>
+  <p style="margin-top:10px;">Terza generazione. Le pratiche rigenerative vi convincono, ma il conto deve tornare. E avete capito una cosa ascoltando un podcast: <b>i dati della vostra azienda valgono</b> — e finora li avete sempre regalati.</p>
+  <h3>Cosa dite in pubblico</h3>
+  <ul>
+    <li>Volete guadagnare dai crediti, non fare beneficenza tecnologica.</li>
+    <li>Volete capire chi possiede i dati raccolti sul vostro campo.</li>
+    <li>Volete pagamenti rapidi e certi.</li>
+  </ul>
+  <div class="secret">
+    <h3>🔒 Riservato</h3>
+    <ul>
+      <li><b>Round 1:</b> i sensori vi incuriosiscono ma 5.500 € da soli non li pagate. Soglia segreta: firmate solo se il vostro <b>netto annuo ≥ 3.500 €</b> (le pratiche vi costano già 3.000 €).</li>
+      <li><b>Round 2:</b> la cooperativa vicina ha scoperto che la sua piattaforma rivendeva dati aggregati a terzi. Volete <b>D2</b> — ma cercate di non pagarla voi: il verificatore la vuole comunque, usatelo come sponda.</li>
+      <li><b>Round 3:</b> lo smart contract vi piace molto (soldi alla verifica, niente attese di 90 giorni): per averlo potete concedere qualcosa.</li>
+      <li><b>Round 4:</b> carta finale — senza di voi non c'è progetto. Ma se salta, perdete anche voi: meglio un buon accordo che nessun accordo.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ========== PAG 5: TERRAPROOF ========== -->
+<div class="page">
+  <p class="kicker">Scheda ruolo · Gruppo 2</p>
+  <h1><span class="role-emoji">📊</span> Fornitore dMRV — TerraProof S.r.l.</h1>
+  <p style="margin-top:10px;">Agri-tech in crescita. Vendete satellite+AI e, nel pacchetto premium, sensori IoT. Ma il vostro vero asset non è l'hardware: è <b>la piattaforma e i dati che ci passano dentro</b>.</p>
+  <h3>Cosa dite in pubblico</h3>
+  <ul>
+    <li>Lo Stack B è il futuro: più precisione, più crediti per tutti.</li>
+    <li>La piattaforma chiusa (D1) è "più semplice e più sicura per tutti".</li>
+    <li>Volete un contratto pluriennale.</li>
+  </ul>
+  <div class="secret">
+    <h3>🔒 Riservato</h3>
+    <ul>
+      <li><b>Round 1:</b> margini — Stack A ~20%, Stack B ~45%: <b>il B è la priorità</b>. Potete scendere fino a 4.800 € solo in cambio del contratto a 5 anni. Trucco: lasciate che sia il verificatore a dire che con ±35% rischia di non certificare — sembrerà più credibile che detto da voi.</li>
+      <li><b>Round 2:</b> D1 vale oro: i dati aggregati allenano il vostro modello regionale (il vero asset aziendale). Se vi impongono D2, chiedete +500 €/anno e... accettate — potete conviverci, ma non fatelo capire subito.</li>
+      <li><b>Round 3:</b> offrite lo smart contract solo con B + R2, presentandolo come vincolo tecnico («il contratto paga sui dati verificati on-chain»). In realtà è la vostra leva commerciale.</li>
+      <li><b>In tasca:</b> opzione "revenue share" — MRV gratis, voi trattenete il 15% dei crediti. Vi conviene solo sopra ~42 €/credito.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ========== PAG 6: CERTCARBON ========== -->
+<div class="page">
+  <p class="kicker">Scheda ruolo · Gruppo 3</p>
+  <h1><span class="role-emoji">🔍</span> Verificatore — CertCarbon</h1>
+  <p style="margin-top:10px;">Ente di verifica indipendente. Non guadagnate dai crediti: vivete di <b>reputazione</b>. La vostra firma trasforma una stima in un credito — e per firmare dovete poter vedere il <b>dato grezzo</b>, non il PDF della piattaforma.</p>
+  <h3>Cosa dite in pubblico</h3>
+  <ul>
+    <li>Buffer: 25% su Stack A, 10% su Stack B. Non si toccano.</li>
+    <li>Accesso al dato grezzo e all'audit trail: non negoziabile.</li>
+    <li>Va chiarito chi risponde se il sequestro reale sarà inferiore.</li>
+  </ul>
+  <div class="secret">
+    <h3>🔒 Riservato</h3>
+    <ul>
+      <li><b>Round 1 (la vostra bomba):</b> le linee guida che applicate (stile CRCF europeo) considerano critica un'incertezza <b>> ±30%</b>: sullo Stack A potete <b>rifiutare la certificazione</b> o imporre buffer 35% (→ solo 130 crediti). Sganciatela quando la discussione si scalda.</li>
+      <li><b>Round 2:</b> verificare su report preconfezionati (D1) è ciò che ha distrutto altri mercati. Pretendete D2 o accesso di audit equivalente: su questo siete <b>il muro</b>.</li>
+      <li><b>Round 3:</b> R2 vi piace (retirement pubblico = meno rischio di doppio conteggio = meno rischio per la vostra reputazione). Ditelo: orienterà il buyer. Sullo smart contract, al momento giusto fate LA domanda: <i>«Lo smart contract paga sul dato. E se il dato è sbagliato? La blockchain garantisce l'integrità di ciò che è registrato, non la sua verità.»</i></li>
+      <li>Se vi offrono qualcosa per ammorbidire buffer o accessi: rifiuto netto. L'indipendenza non si compra.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ========== PAG 7: BUONGUSTO ========== -->
+<div class="page">
+  <p class="kicker">Scheda ruolo · Gruppo 4</p>
+  <h1><span class="role-emoji">🏢</span> Buyer — Gruppo alimentare Buongusto S.p.A.</h1>
+  <p style="margin-top:10px;">Team sustainability con target SBTi. Vi servono rimozioni <b>nella vostra filiera</b> e soprattutto <b>difendibili</b>: tre anni fa un'inchiesta sui vostri crediti forestali vi è costata cara. Parola d'ordine del CFO: <i>«mai più crediti che non possiamo dimostrare»</i>.</p>
+  <h3>Cosa dite in pubblico</h3>
+  <ul>
+    <li>Crediti ad alta integrità: incertezza bassa, dato tracciabile fino al campo.</li>
+    <li>Retirement pubblico: chiunque (anche un giornalista) deve poter verificare.</li>
+    <li>Una storia digitale da raccontare nel report di sostenibilità.</li>
+  </ul>
+  <div class="secret">
+    <h3>🔒 Riservato</h3>
+    <ul>
+      <li><b>Budget totale: 12.000 €/anno</b> (crediti + co-finanziamenti). Non rivelatelo.</li>
+      <li><b>Disponibilità a pagare:</b> 50 €/credito con Stack B + R2 (vi rende inattaccabili) · 40 € con B + R1 · max 28 € con Stack A (e con riserve del verificatore, forse zero).</li>
+      <li><b>Round 1:</b> potete <b>co-finanziare i sensori fino a 2.500 €</b> in cambio di esclusiva sui crediti: sblocca l'impasse su "chi paga".</li>
+      <li><b>Round 3:</b> potete pagare voi la fee del registro R2 (800 €): per voi è un'assicurazione anti-greenwashing a buon mercato.</li>
+      <li>Il CFO preferisce <b>meno crediti ma blindati</b>. Smart contract: vi piace (pagate a condizioni verificate), ma se emerge il problema dell'oracolo chiedete chi garantisce la qualità del dato in ingresso.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ========== PAG 8: CONTRATTO ========== -->
+<div class="page">
+  <p class="kicker">Da compilare nel Round 4 · Una copia per il tavolo</p>
+  <h1>📜 Contratto "Progetto Valdichiara" — anno 1</h1>
+
+  <h2>Le decisioni</h2>
+  <table>
+    <tr><th style="width:34%;">Round</th><th>Decisione presa</th></tr>
+    <tr><td><b>① Stack di misura</b></td><td class="check">☐ Stack A (150 crediti) &nbsp;&nbsp; ☐ Stack B (180 crediti)</td></tr>
+    <tr><td><b>② Dati</b></td><td class="check">☐ D1 piattaforma chiusa &nbsp;&nbsp; ☐ D2 portabili + accesso verificatore (+500 €)</td></tr>
+    <tr><td><b>③ Registro</b></td><td class="check">☐ R1 tradizionale &nbsp;&nbsp; ☐ R2 blockchain (+800 €)</td></tr>
+    <tr><td><b>④ Pagamenti</b></td><td class="check">☐ Bonifico annuale &nbsp;&nbsp; ☐ Smart contract (richiede B + R2)</td></tr>
+  </table>
+
+  <h2>I numeri</h2>
+  <table>
+    <tr><td>Crediti emessi</td><td><span class="fill"></span> crediti</td></tr>
+    <tr><td>Prezzo concordato</td><td><span class="fill"></span> €/credito</td></tr>
+    <tr><td><b>Ricavo totale</b> (crediti × prezzo)</td><td><span class="fill"></span> €</td></tr>
+  </table>
+
+  <h2>Chi paga cosa</h2>
+  <table>
+    <tr><th>Voce di costo</th><th>Importo</th><th>Chi la paga (anche in quota)</th></tr>
+    <tr><td>Stack di misura</td><td><span class="fill" style="min-width:70px;"></span> €</td><td><span class="fill" style="min-width:200px;"></span></td></tr>
+    <tr><td>Clausola dati D2 (se scelta)</td><td>500 €</td><td><span class="fill" style="min-width:200px;"></span></td></tr>
+    <tr><td>Registro R2 (se scelto)</td><td>800 €</td><td><span class="fill" style="min-width:200px;"></span></td></tr>
+  </table>
+
+  <h2>Verifica finale (a voce alta!)</h2>
+  <div class="box">
+    <p>Netto agricoltore = ricavo − costi a suo carico − 3.000 € (pratiche) = <span class="fill"></span> €</p>
+    <p style="margin-top:6px;">🚜 L'agricoltore ci guadagna davvero? &nbsp; ☐ Sì &nbsp; ☐ No → si rinegozia!</p>
+  </div>
+
+  <h2>Firme</h2>
+  <table>
+    <tr><td style="height:46px;">🚜 Agricoltori</td><td>📊 TerraProof</td><td>🔍 CertCarbon</td><td>🏢 Buongusto</td></tr>
+  </table>
+  <p class="meta">Clausola di stile: ogni gruppo può scrivere sotto la firma UNA condizione che ritiene essenziale. Se le condizioni si contraddicono… se ne parla al debrief 😉</p>
+</div>
+
+<p class="scissors">— Pag. 1–2 a tutti · Pag. 3 solo docente · Pag. 4–7 una per gruppo · Pag. 8 sul tavolo del notaio —</p>
+</body>
+</html>

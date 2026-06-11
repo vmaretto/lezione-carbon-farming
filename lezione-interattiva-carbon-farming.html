@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tecnologie digitali per il Carbon Farming — Lezione interattiva</title>
+<style>
+  :root{
+    --bg:#0d1614; --bg2:#121f1c; --card:#182723; --card2:#1e312c;
+    --ink:#e8f0ed; --ink-dim:#9db4ac; --ink-faint:#5f7a71;
+    --green:#34d399; --green-dim:#10b981; --teal:#2dd4bf; --amber:#fbbf24;
+    --blue:#60a5fa; --violet:#a78bfa; --rose:#fb7185;
+    --border:#27403a; --radius:14px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{height:100%;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; background:var(--bg); color:var(--ink); overflow:hidden;}
+  #app{display:flex; height:100vh;}
+  #sidebar{width:272px; min-width:272px; background:var(--bg2); border-right:1px solid var(--border); display:flex; flex-direction:column; transition:margin-left .3s;}
+  #sidebar.hidden{margin-left:-272px;}
+  #sidebar header{padding:18px 16px 10px;}
+  #sidebar header h1{font-size:.95rem; line-height:1.3; color:var(--green);}
+  #sidebar header p{font-size:.72rem; color:var(--ink-faint); margin-top:4px;}
+  #nav{flex:1; overflow-y:auto; padding:6px 8px 16px;}
+  .nav-part{font-size:.65rem; text-transform:uppercase; letter-spacing:.12em; color:var(--ink-faint); padding:14px 10px 4px;}
+  .nav-item{display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:8px; font-size:.8rem; color:var(--ink-dim); cursor:pointer; user-select:none;}
+  .nav-item:hover{background:var(--card);}
+  .nav-item.active{background:var(--card2); color:var(--ink);}
+  .nav-item .t{margin-left:auto; font-size:.64rem; color:var(--ink-faint); background:var(--bg); padding:1px 6px; border-radius:6px;}
+  #clock{padding:12px 16px; border-top:1px solid var(--border); font-size:.78rem; color:var(--ink-dim); display:flex; justify-content:space-between;}
+  #clock b{color:var(--green); font-variant-numeric:tabular-nums;}
+  #main{flex:1; display:flex; flex-direction:column; min-width:0;}
+  #topbar{display:flex; align-items:center; gap:10px; padding:10px 18px; border-bottom:1px solid var(--border);}
+  #progress{flex:1; height:4px; background:var(--card); border-radius:2px; overflow:hidden;}
+  #progress div{height:100%; background:linear-gradient(90deg,var(--green),var(--teal)); width:0%; transition:width .3s;}
+  .iconbtn{background:var(--card); border:1px solid var(--border); color:var(--ink-dim); border-radius:8px; padding:6px 12px; cursor:pointer; font-size:.8rem;}
+  .iconbtn:hover{color:var(--ink); border-color:var(--green-dim);}
+  #stage{flex:1; overflow-y:auto; padding:30px 46px;}
+  .screen{display:none; max-width:1080px; margin:0 auto; animation:fade .35s;}
+  .screen.active{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:none;}}
+  .kicker{font-size:.72rem; text-transform:uppercase; letter-spacing:.16em; color:var(--green); margin-bottom:10px;}
+  h2{font-size:1.8rem; line-height:1.2; margin-bottom:8px; font-weight:700;}
+  .sub{color:var(--ink-dim); font-size:1rem; margin-bottom:22px; max-width:800px; line-height:1.5;}
+  .takeaway{margin-top:22px; padding:14px 18px; border-left:3px solid var(--green); background:var(--card); border-radius:0 var(--radius) var(--radius) 0; font-size:.93rem; line-height:1.5;}
+  .takeaway b{color:var(--green);}
+  .hint{font-size:.74rem; color:var(--ink-faint); margin-top:10px;}
+  .grid{display:grid; gap:13px;}
+  .g2{grid-template-columns:repeat(2,1fr);} .g3{grid-template-columns:repeat(3,1fr);} .g5{grid-template-columns:repeat(5,1fr);}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:17px; transition:transform .15s,border-color .15s; position:relative;}
+  .card.clickable{cursor:pointer;}
+  .card.clickable:hover{transform:translateY(-3px); border-color:var(--green-dim);}
+  .card .emoji{font-size:1.6rem; margin-bottom:9px; display:block;}
+  .card h3{font-size:.98rem; margin-bottom:6px;}
+  .card p{font-size:.83rem; color:var(--ink-dim); line-height:1.5;}
+  .card .reveal{display:none; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); font-size:.83rem; line-height:1.5;}
+  .card.open .reveal{display:block;}
+  .card.open{border-color:var(--green-dim); background:var(--card2);}
+  .tag{display:inline-block; font-size:.66rem; padding:2px 8px; border-radius:20px; background:var(--bg); color:var(--green); border:1px solid var(--border); margin-bottom:8px;}
+  .btn{background:linear-gradient(90deg,var(--green-dim),var(--teal)); color:#06281e; border:none; padding:9px 18px; border-radius:10px; font-size:.85rem; font-weight:700; cursor:pointer;}
+  .btn:hover{filter:brightness(1.1);}
+  .btn.ghost{background:var(--card); color:var(--ink-dim); border:1px solid var(--border); font-weight:500;}
+  .btn.ghost:hover{color:var(--ink);}
+  .btn.small{padding:6px 12px; font-size:.76rem;}
+  .toolrow{display:flex; gap:10px; margin-top:14px; align-items:center; flex-wrap:wrap;}
+  /* TITLE */
+  #s0{text-align:center; padding-top:7vh;}
+  #s0 .big{font-size:3rem; font-weight:800; line-height:1.15; background:linear-gradient(90deg,var(--green),var(--teal),var(--blue)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .chain{display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap;}
+  #s0 .chain{margin:42px auto 0;}
+  .chain-node{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:11px 16px; font-size:.88rem;}
+  .chain-arrow{color:var(--green); font-size:1.2rem;}
+  /* MENTI */
+  .menti{background:var(--card); border:1px dashed var(--teal); border-radius:var(--radius); padding:14px; margin-bottom:18px;}
+  .menti .mhead{display:flex; align-items:center; gap:8px; font-size:.82rem; color:var(--teal); margin-bottom:8px;}
+  .menti .mhead .cfg{margin-left:auto;}
+  .menti iframe{width:100%; height:420px; border:0; border-radius:10px; background:#fff;}
+  .menti .setup{display:flex; gap:8px;}
+  .menti input{flex:1; background:var(--bg); border:1px solid var(--border); color:var(--ink); padding:9px 12px; border-radius:8px; font-size:.8rem;}
+  .menti .help{font-size:.72rem; color:var(--ink-faint); margin-top:8px; line-height:1.5;}
+  /* VIDEO */
+  .yt{position:relative; border-radius:12px; overflow:hidden; background:#000; aspect-ratio:16/9; cursor:pointer; border:1px solid var(--border);}
+  .yt img{width:100%; height:100%; object-fit:cover; opacity:.75;}
+  .yt .play{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:3rem; color:#fff; text-shadow:0 2px 12px rgba(0,0,0,.7);}
+  .yt .vtitle{position:absolute; left:0; right:0; bottom:0; padding:10px 14px; font-size:.78rem; background:linear-gradient(transparent,rgba(0,0,0,.85)); color:#fff;}
+  .yt iframe{width:100%; height:100%; border:0;}
+  .videorow{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:18px;}
+  .vid-label{font-size:.74rem; color:var(--ink-faint); margin:14px 0 6px; text-transform:uppercase; letter-spacing:.1em;}
+  .vbar{display:flex; gap:10px; align-items:center; font-size:.72rem; color:var(--ink-faint); margin-top:6px;}
+  .vbar a{color:var(--teal); text-decoration:none;} .vbar a:hover{text-decoration:underline;}
+  .vbar .gear{margin-left:auto; cursor:pointer; color:var(--ink-faint); background:none; border:none; font-size:.72rem;}
+  .vbar .gear:hover{color:var(--ink);}
+  .vedit{display:flex; gap:8px; margin-top:6px;}
+  .vedit input{flex:1; background:var(--bg); border:1px solid var(--border); color:var(--ink); padding:7px 10px; border-radius:8px; font-size:.74rem;}
+  .imgslot{border:1px solid var(--border); border-radius:12px; background:var(--bg); min-height:170px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; flex-direction:column; gap:8px; color:var(--ink-faint); font-size:.85rem;}
+  .imgslot img{width:100%; display:block;}
+  /* ICEBREAKER */
+  .ice-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:10px;}
+  .ice{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 8px; text-align:center; cursor:pointer; transition:all .15s;}
+  .ice .emoji{font-size:1.5rem;} .ice p{font-size:.68rem; color:var(--ink-dim); margin-top:5px;}
+  .ice.on{background:var(--card2); border-color:var(--green); box-shadow:0 0 18px rgba(52,211,153,.25);}
+  #iceFact{min-height:86px; margin-top:16px;}
+  .icefact{background:linear-gradient(160deg,var(--card2),var(--card)); border:1px solid var(--green); border-radius:18px 18px 18px 4px; padding:16px 20px; font-size:1.05rem; line-height:1.55; color:var(--ink); box-shadow:0 8px 28px rgba(0,0,0,.45); animation:bubpop .35s cubic-bezier(.34,1.56,.64,1);}
+  .icefact b{color:var(--green);} .icefact .num{color:var(--amber); font-weight:700;}
+  .icefact .bigemoji{font-size:1.5rem; margin-right:8px;}
+  @keyframes bubpop{from{opacity:0; transform:scale(.85) translateY(14px);} to{opacity:1; transform:none;}}
+  /* TIMELINE */
+  #tl{display:flex; align-items:stretch; margin:20px 0 16px; position:relative;}
+  #tl::before{content:''; position:absolute; left:0; right:0; top:32px; height:2px; background:var(--border);}
+  .wave{flex:1; text-align:center; cursor:pointer; position:relative; padding-top:12px;}
+  .wave .dot{width:40px; height:40px; border-radius:50%; background:var(--card); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; margin:0 auto; font-size:1rem; transition:all .2s; position:relative; z-index:1;}
+  .wave.active .dot{border-color:var(--green); background:var(--card2); box-shadow:0 0 16px rgba(52,211,153,.35); transform:scale(1.12);}
+  .wave h4{font-size:.76rem; margin-top:9px;}
+  .wave p{font-size:.64rem; color:var(--ink-faint);}
+  #wavePanel{background:var(--card); border:1px solid var(--green-dim); border-radius:var(--radius); padding:20px; min-height:150px;}
+  #wavePanel h3{color:var(--green); margin-bottom:8px;}
+  #wavePanel .cols{display:grid; grid-template-columns:1.4fr 1fr; gap:18px; margin-top:8px;}
+  #wavePanel p{font-size:.88rem; color:var(--ink-dim); line-height:1.55;}
+  #wavePanel .cost{background:var(--bg); border-radius:10px; padding:13px; font-size:.83rem; line-height:1.5;}
+  #wavePanel .cost b{color:var(--amber);}
+  /* SUSTAINABILITY GAUGES */
+  .sus-grid{display:grid; grid-template-columns:250px 1fr; gap:22px; align-items:center; margin-top:6px;}
+  .gaugebox{text-align:center;}
+  .gaugebox canvas{width:220px; height:220px;}
+  .gaugebox .gl{font-size:.78rem; color:var(--ink-dim); margin-top:4px; line-height:1.4; max-width:230px; margin-left:auto; margin-right:auto;}
+  .bbar{margin:14px 0;}
+  .bbar .lab{font-size:.84rem; color:var(--ink); margin-bottom:6px;}
+  .bbar .lab b{color:var(--amber);}
+  .bbar .track{height:28px; background:var(--bg); border-radius:9px; overflow:hidden;}
+  .bbar .fill{height:100%; border-radius:9px; width:0%; transition:width 1.3s cubic-bezier(.2,.8,.2,1);}
+  .sus-note{margin-top:14px; font-size:.9rem; color:var(--ink-dim); line-height:1.55; border-top:1px dashed var(--border); padding-top:12px;}
+  .sus-note b{color:var(--green);}
+  @media (max-width:900px){.sus-grid{grid-template-columns:1fr;}}
+  /* TREND EXPLORER */
+  .trend-chips{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;}
+  .tchip{padding:9px 16px; border-radius:12px; background:var(--card); border:1px solid var(--border); font-size:.85rem; color:var(--ink-dim); cursor:pointer; transition:all .15s;}
+  .tchip:hover{border-color:var(--green-dim); transform:translateY(-2px);}
+  .tchip.active{background:var(--card2); color:var(--ink); border-color:var(--green); box-shadow:0 0 16px rgba(52,211,153,.2);}
+  .trend-panel{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px;}
+  .trend-panel canvas{width:100%; height:300px; display:block; margin:8px 0 4px;}
+  .kpi-row{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:10px;}
+  .kpi{background:var(--bg); border-radius:12px; padding:14px; text-align:center;}
+  .kpi .v{font-size:2rem; font-weight:800; color:var(--green); font-variant-numeric:tabular-nums; line-height:1.1;}
+  .kpi .l{font-size:.72rem; color:var(--ink-dim); margin-top:4px; line-height:1.4;}
+  /* EXPO CHART */
+  .expo-wrap{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; margin-top:18px;}
+  .expo-wrap canvas{width:100%; height:300px; display:block;}
+  .expo-ctl{display:flex; gap:18px; align-items:center; margin-top:10px; font-size:.8rem; color:var(--ink-dim); flex-wrap:wrap;}
+  .expo-ctl input{accent-color:var(--green);}
+  .expo-read{font-size:.85rem;}
+  .expo-read b.lin{color:var(--blue);} .expo-read b.exp{color:var(--green);}
+  /* HYPE */
+  .hype-phases{display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:16px;}
+  .hp{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px; cursor:pointer; transition:all .15s;}
+  .hp:hover{border-color:var(--green-dim);}
+  .hp.active{background:var(--card2); border-color:var(--green);}
+  .hp h4{font-size:.76rem;} .hp .n{font-size:1.1rem; color:var(--green); font-weight:800;}
+  #hpPanel{background:var(--card); border:1px solid var(--green-dim); border-radius:var(--radius); padding:16px 20px; margin-bottom:18px; font-size:.9rem; color:var(--ink-dim); line-height:1.6; min-height:84px;}
+  #hpPanel b{color:var(--ink);}
+  #hypeWrap{position:relative; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:10px; height:400px; user-select:none;}
+  #hypeWrap svg{width:100%; height:100%;}
+  .chip{position:absolute; padding:6px 13px; border-radius:20px; font-size:.76rem; font-weight:600; cursor:grab; border:1px solid; touch-action:none; white-space:nowrap; transform:translate(-50%,-50%); z-index:2; background:rgba(13,22,20,.92);}
+  .chip:active{cursor:grabbing; z-index:5;}
+  .chip.moving{transition:left 1s cubic-bezier(.5,0,.2,1), top 1s cubic-bezier(.5,0,.2,1);}
+  /* MRV letters */
+  .mrv-letters{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:20px 0;}
+  .letter{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px; text-align:center; cursor:pointer; transition:all .2s;}
+  .letter:hover{border-color:var(--green-dim);}
+  .letter .big{font-size:3.2rem; font-weight:800; color:var(--green);}
+  .letter h4{margin:6px 0;}
+  .letter .body{display:none; font-size:.83rem; color:var(--ink-dim); line-height:1.55; text-align:left; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);}
+  .letter.open .body{display:block;}
+  .letter.open{background:var(--card2); border-color:var(--green);}
+  table.cmp{width:100%; border-collapse:collapse; margin-top:18px; font-size:.85rem;}
+  table.cmp th, table.cmp td{border:1px solid var(--border); padding:9px 12px; text-align:left;}
+  table.cmp th{background:var(--card); color:var(--ink-dim); font-size:.74rem; text-transform:uppercase; letter-spacing:.06em;}
+  table.cmp td b{color:var(--green);}
+  table.cmp td.bad{color:var(--rose);} table.cmp td.good{color:var(--green);}
+  /* MRV BAR */
+  .mrv-box{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:22px;}
+  #mrvBar{height:60px; border-radius:12px; overflow:hidden; display:flex; margin:16px 0 10px; border:1px solid var(--border); position:relative;}
+  #mrvBar .seg{display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; transition:width .25s; min-width:0; overflow:hidden; white-space:nowrap;}
+  #segMrv{background:linear-gradient(90deg,#7f1d1d,#b91c1c); color:#fecaca;}
+  #segFarm{background:linear-gradient(90deg,#065f46,#10b981); color:#052e22;}
+  .guessmark{position:absolute; top:-6px; bottom:-6px; width:3px; background:var(--amber); border-radius:2px;}
+  .guessmark::after{content:attr(data-l); position:absolute; top:-18px; left:-20px; font-size:.62rem; color:var(--amber); width:60px; text-align:center;}
+  input[type=range]{width:100%; accent-color:var(--green);}
+  .preset-row{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+  /* CYCLE */
+  .cycle{display:grid; grid-template-columns:repeat(6,1fr); gap:9px; margin-bottom:14px;}
+  .phase{background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 8px; text-align:center; cursor:pointer; transition:all .15s;}
+  .phase:hover{border-color:var(--green-dim);}
+  .phase.active{background:var(--card2); border-color:var(--green); transform:translateY(-3px);}
+  .phase.correct{border-color:var(--green); box-shadow:0 0 14px rgba(52,211,153,.4);}
+  .phase.wrong{border-color:var(--rose); animation:shake .3s;}
+  @keyframes shake{25%{transform:translateX(-4px);}75%{transform:translateX(4px);}}
+  .phase .emoji{font-size:1.3rem;} .phase h4{font-size:.7rem; margin-top:7px; line-height:1.25;}
+  #phasePanel{background:var(--card); border:1px solid var(--green-dim); border-radius:var(--radius); padding:18px 20px; min-height:140px;}
+  #phasePanel h3{color:var(--green); font-size:1rem; margin-bottom:4px;}
+  #phasePanel .pdesc{font-size:.86rem; color:var(--ink-dim); margin-bottom:12px; line-height:1.5;}
+  .techitem{padding:10px 12px; background:var(--bg); border-radius:10px; margin-bottom:8px;}
+  .techitem h5{font-size:.84rem; color:var(--ink);}
+  .techitem p{font-size:.78rem; color:var(--ink-dim); line-height:1.5; margin-top:2px;}
+  .techitem p .ex{color:var(--teal);}
+  #quizBox{background:var(--card2); border:1px solid var(--teal); border-radius:var(--radius); padding:16px 20px; margin-top:16px;}
+  #quizBox .q{font-size:1rem; margin:6px 0;}
+  #quizBox .q b{color:var(--teal);}
+  #quizScore{font-size:.8rem; color:var(--ink-dim);}
+  /* TABS */
+  .tabs{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
+  .tab{padding:8px 15px; border-radius:10px; background:var(--card); border:1px solid var(--border); font-size:.82rem; color:var(--ink-dim); cursor:pointer;}
+  .tab.active{background:var(--card2); color:var(--ink); border-color:var(--green);}
+  .tabpanes .pane{display:none; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:20px; line-height:1.6;}
+  .tabpanes .pane.active{display:block;}
+  .pane p,.pane li{font-size:.9rem; color:var(--ink-dim);}
+  .pane ul{margin:8px 0 8px 20px;}
+  .pane b{color:var(--ink);}
+  .pane .warn{color:var(--amber);}
+  /* IOT ORDER GAME */
+  #iotPool, #iotSeq{display:flex; gap:10px; flex-wrap:wrap; min-height:54px; margin-top:10px;}
+  .step-chip{padding:10px 14px; border-radius:10px; background:var(--bg); border:1px solid var(--border); font-size:.8rem; cursor:pointer;}
+  .step-chip:hover{border-color:var(--teal);}
+  .step-chip.placed{background:var(--card2); border-color:var(--green); cursor:default;}
+  .step-chip.err{border-color:var(--rose); animation:shake .3s;}
+  #iotSeq{border:1px dashed var(--border); border-radius:10px; padding:8px;}
+  /* AI UNCERTAINTY */
+  .unc-box{background:var(--bg); border-radius:12px; padding:16px; margin-top:12px;}
+  .unc-out{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; text-align:center;}
+  .unc-out .o{background:var(--card2); border-radius:10px; padding:12px;}
+  .unc-out .o .v{font-size:1.6rem; font-weight:800; color:var(--green);}
+  .unc-out .o .l{font-size:.7rem; color:var(--ink-faint); margin-top:2px;}
+  /* BLOCKCHAIN DEMO */
+  #bcChain{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px;}
+  .block{background:var(--bg); border:2px solid var(--green); border-radius:12px; padding:13px; transition:border-color .3s;}
+  .block.invalid{border-color:var(--rose);}
+  .block h5{font-size:.78rem; color:var(--ink-dim); display:flex; justify-content:space-between;}
+  .block h5 .st{font-size:.9rem;}
+  .block textarea{width:100%; background:var(--card); color:var(--ink); border:1px solid var(--border); border-radius:8px; padding:8px; font-size:.76rem; margin-top:8px; resize:none; height:58px; font-family:inherit;}
+  .block .hash{font-family:ui-monospace,monospace; font-size:.66rem; color:var(--teal); margin-top:8px; word-break:break-all;}
+  .block.invalid .hash{color:var(--rose);}
+  .block .prev{font-family:ui-monospace,monospace; font-size:.6rem; color:var(--ink-faint); word-break:break-all;}
+  /* CHAIN ANIM */
+  #chainStage{display:flex; align-items:center; justify-content:space-between; gap:6px; margin:26px 0;}
+  .cnode{flex:1; text-align:center; opacity:.22; transition:all .5s; min-width:0;}
+  .cnode .bub{width:70px; height:70px; margin:0 auto; border-radius:50%; background:var(--card); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.8rem; transition:all .5s;}
+  .cnode h4{font-size:.74rem; margin-top:9px;} .cnode p{font-size:.62rem; color:var(--ink-faint);}
+  .cnode.lit{opacity:1;}
+  .cnode.lit .bub{border-color:var(--green); box-shadow:0 0 22px rgba(52,211,153,.4); transform:scale(1.08);}
+  .clink{flex:0 0 24px; text-align:center; color:var(--border); font-size:1.1rem; transition:color .5s;}
+  .clink.lit{color:var(--green);}
+  #chainCaption{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px 20px; min-height:92px; font-size:.92rem; color:var(--ink-dim); line-height:1.6;}
+  #chainCaption b{color:var(--green);}
+  /* SIM */
+  .sim-roles{display:grid; grid-template-columns:repeat(4,1fr); gap:11px; margin:16px 0;}
+  .role{border-radius:var(--radius); padding:14px; border:1px solid var(--border);}
+  .role h4{font-size:.86rem; margin:7px 0 5px;} .role p{font-size:.74rem; color:var(--ink-dim); line-height:1.5;}
+  .role .emoji{font-size:1.5rem;}
+  .sim-decisions{display:grid; grid-template-columns:repeat(4,1fr); gap:11px; margin:14px 0;}
+  .dec{background:var(--card); border:1px solid var(--teal); border-radius:12px; padding:12px;}
+  .dec h5{font-size:.76rem; color:var(--teal); margin-bottom:4px;}
+  .dec p{font-size:.72rem; color:var(--ink-dim); line-height:1.45;}
+  #simTimer{text-align:center; margin:20px 0 8px;}
+  #simTime{font-size:4.2rem; font-weight:800; font-variant-numeric:tabular-nums; color:var(--green);}
+  #simTime.warning{color:var(--amber);} #simTime.danger{color:var(--rose); animation:blink 1s infinite;}
+  @keyframes blink{50%{opacity:.45;}}
+  #simPhase{font-size:.92rem; color:var(--ink-dim); margin-top:4px;}
+  .sim-controls{display:flex; gap:10px; justify-content:center; margin-top:12px;}
+  #footnav{display:flex; justify-content:space-between; align-items:center; padding:12px 18px; border-top:1px solid var(--border);}
+  #footnav .where{font-size:.78rem; color:var(--ink-faint);}
+  /* COACH (copione docente) */
+  #coach{position:fixed; right:16px; bottom:64px; width:350px; max-height:72vh; overflow-y:auto; z-index:60; display:none; padding:4px;}
+  #coach.show{display:block;}
+  #coach .chead{font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; color:var(--teal); margin:0 0 2px 6px; text-shadow:0 2px 8px rgba(0,0,0,.8);}
+  .bub2{background:linear-gradient(160deg,var(--card2),var(--card)); border:1px solid var(--green-dim); border-radius:16px 16px 16px 4px; padding:11px 14px; margin-top:10px; font-size:.83rem; color:var(--ink); line-height:1.5; box-shadow:0 8px 28px rgba(0,0,0,.5); opacity:0; transform:translateY(12px); animation:bubin .45s forwards;}
+  .bub2 b{color:var(--green);}
+  .bub2 .who{font-size:.64rem; color:var(--teal); text-transform:uppercase; letter-spacing:.1em; display:block; margin-bottom:3px;}
+  @keyframes bubin{to{opacity:1; transform:none;}}
+  #coachBtn.on{background:var(--card2); color:var(--green); border-color:var(--green);}
+  @media (max-width:900px){
+    #sidebar{position:fixed; z-index:10; height:100%;}
+    .g3,.g5,.ice-grid,.sim-roles,.cycle,.hype-phases,.sim-decisions,#bcChain,.mrv-letters{grid-template-columns:repeat(2,1fr);}
+    .videorow{grid-template-columns:1fr;}
+    #stage{padding:18px;}
+    #chainStage{flex-wrap:wrap;} .clink{display:none;} .cnode{flex:0 0 30%;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <header>
+      <h1>Tecnologie digitali per il Carbon Farming</h1>
+      <p>Modulo: Carbon Farming e tecniche MRV · 3 ore</p>
+    </header>
+    <nav id="nav"></nav>
+    <div id="clock"><span>Tempo lezione</span><b id="clockVal">00:00</b></div>
+  </aside>
+
+  <div id="main">
+    <div id="topbar">
+      <button class="iconbtn" id="toggleNav">☰</button>
+      <div id="progress"><div id="progFill"></div></div>
+      <button class="iconbtn" id="coachBtn" title="Copione del docente (tasto C)">💬 Copione</button>
+      <button class="iconbtn" id="fsBtn" title="Schermo intero">⛶</button>
+    </div>
+
+    <div id="stage">
+
+      <!-- 0 · TITLE -->
+      <section class="screen" id="s0">
+        <p class="kicker">Master Carbon Farming · Modulo MRV</p>
+        <div class="big">Tecnologie digitali<br>per il Carbon Farming</div>
+        <p class="sub" style="margin:22px auto 0; text-align:center;">Dal generale al particolare: perché senza digitale non esiste un MRV credibile e scalabile.</p>
+        <div class="chain">
+          <div class="chain-node">📡 Il sensore <b>misura</b></div><div class="chain-arrow">→</div>
+          <div class="chain-node">🧠 L'AI <b>stima</b></div><div class="chain-arrow">→</div>
+          <div class="chain-node">⛓️ La blockchain <b>certifica e paga</b></div>
+        </div>
+        <p class="hint" style="margin-top:46px;">Frecce ← → per navigare · I riquadri Mentimeter si configurano una sola volta e restano salvati</p>
+      </section>
+
+      <!-- 1 · APERTURA + MENTI -->
+      <section class="screen" id="s1">
+        <p class="kicker">Parte 1 · Apertura · 5'</p>
+        <h2>Quante tecnologie digitali avete usato per arrivare qui stamattina?</h2>
+        <p class="sub">Gli studenti inquadrano il QR (o vanno su menti.com col codice), votano dal telefono e i risultati compaiono qui sotto in diretta. Poi sintetizza accendendo le caselle corrispondenti alle risposte emerse.</p>
+        <div style="display:flex; gap:20px; align-items:center; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:14px 18px; margin-bottom:16px;">
+          <img src="data:image/png;base64,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" alt="QR menti" style="width:170px; height:170px; border-radius:10px; background:#fff; padding:4px;">
+          <div>
+            <p style="font-size:.78rem; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px;">Inquadra per votare</p>
+            <p style="font-size:1.5rem; font-weight:800;">menti.com</p>
+            <p style="font-size:1.1rem; color:var(--ink-dim);">codice: <b style="color:var(--green); font-size:1.5rem; letter-spacing:.05em;">7217 7016</b></p>
+            <p class="hint">Il QR porta direttamente al voto. Codice valido 14 giorni: se lo rinnovi su Mentimeter, chiedimi di rigenerare il QR.</p>
+          </div>
+        </div>
+        <div class="menti" data-key="apertura" data-title="Sondaggio Mentimeter — risultati live" data-default="https://www.mentimeter.com/app/presentation/al7pafb3rui9a1aweo7qqi9ptb9qwj1g/embed"></div>
+        <p class="vid-label">Sintesi manuale (accendi ciò che è emerso — ogni tecnologia rivela un fatto)</p>
+        <div class="ice-grid" id="iceGrid"></div>
+        <div id="iceFact"></div>
+        <div class="takeaway"><b>Take-away:</b> non parleremo di fantascienza, ma di tecnologie che usate già — applicate al carbonio.</div>
+      </section>
+
+      <!-- 2 · TIMELINE + VIDEO -->
+      <section class="screen" id="s2">
+        <p class="kicker">Parte 1 · Un po' di storia · 8'</p>
+        <h2>Le cinque ondate del digitale</h2>
+        <p class="sub">Clicca su ogni ondata: cosa è successo e <b>quale costo è crollato</b>. Sotto, due video per dare corpo alla storia.</p>
+        <div id="tl"></div>
+        <div id="wavePanel"></div>
+        <div style="max-width:780px; margin:18px auto 0;">
+          <p class="vid-label">🎬 Video — la storia del digitale</p>
+          <div class="yt" data-key="s2a" data-default="https://www.youtube.com/watch?v=VmQl1VDIFp4" data-t="Guida assistita GPS+RTK sul trattore (The Italian Farmer)"></div>
+        </div>
+        <p class="hint" style="text-align:center;">Con ⚙️ incolla il link del tuo video NotebookLM (YouTube non in elenco) o il nome del file .mp4 messo in questa cartella.</p>
+        <div class="takeaway"><b>Concetto chiave:</b> ogni ondata ha abbattuto un costo — calcolo, comunicazione, posizionamento, sensore, previsione. Il carbon farming è economicamente possibile <b>solo perché questi costi sono crollati</b>.</div>
+      </section>
+
+      <!-- 3 · EMERGENTE + EXPO CHART + MENTI -->
+      <section class="screen" id="s3">
+        <p class="kicker">Parte 1 · Concetti · 7'</p>
+        <h2>Cos'è una tecnologia emergente?</h2>
+        <p class="sub">Prima chiedi all'aula con Mentimeter («Quali di queste sono tecnologie emergenti?»), poi rivela i cinque attributi di Rotolo, Hicks &amp; Martin (2015).</p>
+        <div style="display:flex; gap:16px; align-items:center; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:10px 16px; margin-bottom:14px;">
+          <img src="data:image/png;base64,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" alt="QR menti quiz" style="width:120px; height:120px; border-radius:8px; background:#fff; padding:3px;">
+          <div>
+            <p style="font-size:.74rem; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.1em;">Inquadra per votare</p>
+            <p style="font-size:1.1rem; font-weight:800;">menti.com · codice <b style="color:var(--green); font-size:1.3rem;">4595 7847</b></p>
+            <p class="hint" style="margin-top:2px;">Fino a 3 risposte a testa. Valido 14 giorni.</p>
+          </div>
+        </div>
+        <div class="menti" data-key="emergente" data-title="Mentimeter — quiz tecnologie emergenti" data-default="https://www.mentimeter.com/app/presentation/alfybgix1jym1xo6r7xd1rtm2zh6g8xi/embed"></div>
+        <div class="grid g5">
+          <div class="card clickable" onclick="this.classList.toggle('open')"><span class="emoji">💥</span><h3>1. Novità radicale</h3><div class="reveal">Non un miglioramento incrementale: un modo nuovo di fare le cose (la blockchain non è "un database più veloce").</div></div>
+          <div class="card clickable" onclick="this.classList.toggle('open')"><span class="emoji">📈</span><h3>2. Crescita rapida</h3><div class="reveal">Adozione, brevetti, investimenti e pubblicazioni crescono più veloci del contesto.</div></div>
+          <div class="card clickable" onclick="this.classList.toggle('open')"><span class="emoji">🧩</span><h3>3. Coerenza</h3><div class="reveal">La tecnologia acquista identità propria: comunità, standard, conferenze dedicate.</div></div>
+          <div class="card clickable" onclick="this.classList.toggle('open')"><span class="emoji">🌍</span><h3>4. Impatto rilevante</h3><div class="reveal">Potenziale di trasformare settori interi o crearne di nuovi (il mercato dei crediti di carbonio!).</div></div>
+          <div class="card clickable" onclick="this.classList.toggle('open')"><span class="emoji">❓</span><h3>5. Incertezza</h3><div class="reveal">L'attributo decisivo: tempi, applicazioni vincenti e perfino la sopravvivenza della tecnologia sono incerti.</div></div>
+        </div>
+        <div class="expo-wrap">
+          <p style="font-size:.86rem; color:var(--ink-dim); margin-bottom:6px;">📐 <b style="color:var(--ink);">Perché le tecnologie emergenti ci sorprendono:</b> il nostro cervello ragiona in modo <b style="color:var(--blue);">lineare</b>, le tecnologie crescono in modo <b style="color:var(--green);">esponenziale</b>. Muovi lo slider sugli anni.</p>
+          <canvas id="expoCanvas" width="1000" height="300"></canvas>
+          <div class="expo-ctl">
+            <span>Anno:</span><input type="range" id="expoYear" min="1" max="20" value="6" style="width:240px;">
+            <span class="expo-read" id="expoRead"></span>
+          </div>
+          <p class="hint">All'inizio l'esponenziale sembra <i>più lenta</i> della lineare (fase di delusione)… poi la supera ed esplode. È il motivo per cui sottovalutiamo le tecnologie emergenti due volte: prima troppa attesa, poi troppo poca.</p>
+        </div>
+        <div class="takeaway"><b>Implicazione pratica:</b> chi progetta un'iniziativa di carbon farming deve distinguere tecnologie <b>mature</b> (GPS, GIS), <b>in consolidamento</b> (IoT, AI) ed <b>emergenti</b> (blockchain). Su questa distinzione si gioca il rischio del progetto.</div>
+      </section>
+
+      <!-- 4 · HYPE SPIEGATO + ESERCIZIO -->
+      <section class="screen" id="s4">
+        <p class="kicker">Parte 1 · Esercizio interattivo · 5'</p>
+        <h2>Lo Hype Cycle, spiegato semplice</h2>
+        <p class="sub">È la "curva delle emozioni" che accompagna ogni tecnologia: prima l'entusiasmo esagerato, poi la delusione, infine — se sopravvive — l'utilità vera. Clicca le 5 fasi, poi fai l'esercizio.</p>
+        <div class="hype-phases" id="hpRow"></div>
+        <div id="hpPanel"></div>
+        <p class="vid-label">🎯 Esercizio: trascina le tecnologie sulla curva (chiedi prima all'aula)</p>
+        <div id="hypeWrap">
+          <svg viewBox="0 0 1000 400" preserveAspectRatio="none">
+            <path d="M 30 370 C 120 370, 150 60, 240 60 C 320 60, 330 250, 420 270 C 520 290, 700 200, 970 150" fill="none" stroke="#2dd4bf" stroke-width="3" opacity=".8"/>
+            <line x1="30" y1="385" x2="975" y2="385" stroke="#27403a" stroke-width="2"/>
+            <text x="55" y="350" fill="#5f7a71" font-size="13">1 · Innesco</text>
+            <text x="180" y="40" fill="#5f7a71" font-size="13">2 · Picco delle aspettative</text>
+            <text x="365" y="310" fill="#5f7a71" font-size="13">3 · Disillusione</text>
+            <text x="600" y="195" fill="#5f7a71" font-size="13">4 · Risalita</text>
+            <text x="835" y="130" fill="#5f7a71" font-size="13">5 · Produttività</text>
+          </svg>
+        </div>
+        <div class="toolrow">
+          <button class="btn" id="hypeReveal">Mostra il posizionamento suggerito</button>
+          <button class="btn ghost" id="hypeReset">Ripristina</button>
+          <span class="hint">Il posizionamento "giusto" non esiste: serve a discutere maturità e incertezza.</span>
+        </div>
+      </section>
+
+      <!-- 5 · TREND GENERALI (esploratore animato) -->
+      <section class="screen" id="s5">
+        <p class="kicker">Parte 2 · Trend · 6'</p>
+        <h2>I trend generali del digitale</h2>
+        <p class="sub">Cinque direzioni che attraversano tutti i settori. Clicca un trend: la sua curva di crescita si disegna in diretta. La parte tratteggiata è previsione.</p>
+        <div class="trend-chips" id="trendChips"></div>
+        <div class="trend-panel">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:14px; flex-wrap:wrap;">
+            <h3 id="tpTitle" style="font-size:1.2rem;"></h3>
+            <p id="tpClaim" style="font-size:.86rem; color:var(--ink-dim);"></p>
+          </div>
+          <canvas id="trendCanvas" width="1000" height="300"></canvas>
+          <div class="kpi-row" id="tpKpis"></div>
+          <p class="hint" id="tpSrc"></p>
+        </div>
+        <div class="takeaway"><b>Il filo comune:</b> tutte e cinque le curve hanno la stessa forma — quella esponenziale vista poco fa. E tutto questo digitale serve anche a <b>misurare il pianeta</b>…</div>
+      </section>
+
+      <!-- 6 · SOSTENIBILITÀ (gauge + barre) -->
+      <section class="screen" id="s6">
+        <p class="kicker">Parte 2 · Trend · 6'</p>
+        <h2>Digitale per la sostenibilità</h2>
+        <p class="sub">La sostenibilità va <b>misurata</b>, non dichiarata. E misurare su scala è possibile solo col digitale. Clicca i cinque temi: ogni numero racconta perché.</p>
+        <div class="trend-chips" id="susChips"></div>
+        <div class="trend-panel">
+          <h3 id="susTitle" style="font-size:1.2rem; margin-bottom:4px;"></h3>
+          <div class="sus-grid">
+            <div class="gaugebox">
+              <canvas id="susGauge" width="220" height="220"></canvas>
+              <p class="gl" id="susGl"></p>
+            </div>
+            <div id="susBars"></div>
+          </div>
+          <p class="sus-note" id="susNote"></p>
+        </div>
+      </section>
+
+      <!-- 7 · TREND CARBON FARMING -->
+      <section class="screen" id="s7">
+        <p class="kicker">Parte 2 · Trend · 6'</p>
+        <h2>Digitale per il carbon farming</h2>
+        <p class="sub">Restringiamo il campo: cosa sta succedendo, adesso, all'incrocio tra digitale e carbonio agricolo.</p>
+        <div class="grid g3">
+          <div class="card clickable" onclick="this.classList.toggle('open')"><span class="tag">dMRV</span><h3>L'MRV diventa digitale</h3><p>Da campagne di campionamento a monitoraggio continuo.</p><div class="reveal">Satellite + sensori + AI sostituiscono parte dei prelievi. Obiettivo: abbattere il costo per ettaro che oggi frena i piccoli progetti.</div></div>
+          <div class="card clickable" onclick="this.classList.toggle('open')"><span class="tag">Piattaforme</span><h3>Piattaforme integrate</h3><p>Dall'agricoltore al mercato in un'unica filiera digitale.</p><div class="reveal">Agreena, Soil Capital, eAgronom: onboarding, monitoraggio, certificazione e vendita crediti in un flusso unico. L'agricoltore vede una app, dietro c'è l'intero stack.</div></div>
+          <div class="card clickable" onclick="this.classList.toggle('open')"><span class="tag">Registri</span><h3>Registri pubblici digitali</h3><p>L'infrastruttura di fiducia diventa istituzionale.</p><div class="reveal">In Italia: registro CREA dei crediti agroforestali (L. 41/2023). In UE: il CRCF (Reg. 2024/3012) costruisce il registro europeo delle rimozioni certificate.</div></div>
+          <div class="card clickable" onclick="this.classList.toggle('open')"><span class="tag">Insetting</span><h3>Insetting di filiera</h3><p>Le aziende comprano riduzioni <i>dentro</i> la propria filiera.</p><div class="reveal">I gruppi alimentari finanziano il carbon farming dei propri fornitori: serve tracciabilità digitale che colleghi il campo al prodotto a scaffale.</div></div>
+          <div class="card clickable" onclick="this.classList.toggle('open')"><span class="tag">AI</span><h3>AI per la stima del SOC</h3><p>Modelli che mappano il carbonio dove non si campiona.</p><div class="reveal">Operatori come Boomitra (premiato per il dMRV satellitare) stimano il carbonio del suolo via satellite+AI, con approvazione degli standard (Verra).</div></div>
+          <div class="card clickable" onclick="this.classList.toggle('open')"><span class="tag">Standard</span><h3>Standard e interoperabilità</h3><p>Metodologie digitali e dati che si parlano.</p><div class="reveal">Verra VM0042, Label Bas Carbone, CRCF: gli standard incorporano sempre più requisiti digitali (dato grezzo tracciabile, incertezza quantificata, audit trail).</div></div>
+        </div>
+        <div style="max-width:780px; margin:18px auto 0;">
+          <p class="vid-label">🎬 Video — l'evoluzione del digitale per il carbon farming</p>
+          <div class="yt" data-key="s7a" data-default="" data-t="Video NotebookLM da inserire"></div>
+        </div>
+        <p class="hint" style="text-align:center;">Genera il video con NotebookLM (fonte e prompt pronti), poi ⚙️ → incolla il link YouTube o il nome del file .mp4.</p>
+      </section>
+
+      <!-- 8 · COS'È MRV/dMRV -->
+      <section class="screen" id="s8">
+        <p class="kicker">Parte 2 · Il concetto chiave · 6'</p>
+        <h2>Prima di tutto: cos'è l'MRV?</h2>
+        <p class="sub">Tre lettere che reggono l'intero mercato del carbonio. Clicca ogni lettera — e chiedi prima all'aula cosa significa.</p>
+        <div class="mrv-letters">
+          <div class="letter" onclick="this.classList.toggle('open')">
+            <div class="big">M</div><h4>Monitoring / Measurement</h4>
+            <div class="body"><b>Misurare</b> quanta CO₂ è stata davvero sequestrata (o non emessa). Nel carbon farming: quanto carbonio organico è entrato nel suolo. È la parte più difficile e costosa: il suolo è variabile, i cambiamenti sono lenti e piccoli rispetto allo stock esistente.</div>
+          </div>
+          <div class="letter" onclick="this.classList.toggle('open')">
+            <div class="big">R</div><h4>Reporting</h4>
+            <div class="body"><b>Rendicontare</b> in modo standard e confrontabile: trasformare le misure in un report conforme a una metodologia (Verra VM0042, Label Bas Carbone, CRCF). Senza un formato comune, nessuno può confrontare o aggregare i progetti.</div>
+          </div>
+          <div class="letter" onclick="this.classList.toggle('open')">
+            <div class="big">V</div><h4>Verification</h4>
+            <div class="body"><b>Verificare</b>: un ente terzo e indipendente controlla che misure e report siano corretti. È la firma che trasforma una stima in un <b>credito vendibile</b>. La fiducia del mercato si regge tutta qui.</div>
+          </div>
+        </div>
+        <h2 style="font-size:1.3rem; margin-top:26px;">…e il dMRV? La stessa cosa, ma digitale</h2>
+        <table class="cmp">
+          <tr><th></th><th>MRV tradizionale</th><th>dMRV (digitale)</th></tr>
+          <tr><td><b>Misura</b></td><td class="bad">Campionamenti manuali periodici (ogni 1–5 anni)</td><td class="good">Continua: satellite + sensori IoT + modelli AI</td></tr>
+          <tr><td><b>Report</b></td><td class="bad">Documenti compilati a mano, fogli di calcolo</td><td class="good">Generato automaticamente dalla piattaforma, dato grezzo allegato</td></tr>
+          <tr><td><b>Verifica</b></td><td class="bad">Audit in presenza, a campione, costoso</td><td class="good">Audit remoto e continuo sull'intero dataset</td></tr>
+          <tr><td><b>Costo</b></td><td class="bad">Alto e proporzionale alla superficie</td><td class="good">Costo marginale per ettaro quasi nullo oltre una soglia</td></tr>
+          <tr><td><b>Fiducia</b></td><td class="bad">Si basa sull'auditor</td><td class="good">Si basa sul dato tracciabile + l'auditor</td></tr>
+        </table>
+        <div class="takeaway"><b>Definizione da dettare:</b> il dMRV è l'insieme delle tecnologie digitali che rendono misura, rendicontazione e verifica <b>continue, remote, automatizzate e verificabili da terzi</b>.</div>
+      </section>
+
+      <!-- 9 · COLLO DI BOTTIGLIA (guess → reveal) -->
+      <section class="screen" id="s9">
+        <p class="kicker">Parte 2 · Il problema · 5'</p>
+        <h2>L'MRV è il collo di bottiglia</h2>
+        <p class="sub"><b>Prima chiedi all'aula:</b> «Su 100 € di valore di un credito, quanti se ne mangia l'MRV tradizionale?» Raccogli le ipotesi (a voce o su Mentimeter), posiziona lo slider sulla media della classe, poi rivela.</p>
+        <div class="mrv-box">
+          <div style="display:flex; justify-content:space-between; font-size:.85rem; color:var(--ink-dim);">
+            <span>Valore di 1 credito = 100</span><span>Ipotesi: <b id="mrvPct" style="color:var(--rose);">30%</b></span>
+          </div>
+          <div id="mrvBar">
+            <div class="seg" id="segMrv">MRV</div>
+            <div class="seg" id="segFarm">All'agricoltore</div>
+          </div>
+          <input type="range" id="mrvSlider" min="5" max="70" value="30">
+          <div class="toolrow">
+            <button class="btn" id="mrvGuess">📌 Fissa l'ipotesi dell'aula</button>
+            <button class="btn ghost" id="mrvRevealBtn">🔓 Rivela le fasce reali</button>
+          </div>
+          <div class="preset-row" id="mrvPresets" style="display:none;">
+            <button class="btn ghost" onclick="setMrv(45)">MRV tradizionale: ~30–50%</button>
+            <button class="btn ghost" onclick="setMrv(15)">dMRV digitale: ~10–20%</button>
+            <span class="hint" style="margin:auto 0;">Confronta con l'ipotesi dell'aula (tacca gialla)</span>
+          </div>
+        </div>
+        <div class="takeaway"><b>Perché conta:</b> se l'MRV si mangia metà credito, i piccoli progetti non partono. Il dMRV non è un vezzo tecnologico: è la differenza tra un mercato che funziona e uno che non decolla. Il CRCF (Reg. UE 2024/3012) chiede quantificazione robusta → spinta regolatoria al dMRV.</div>
+      </section>
+
+      <!-- 10 · CICLO DEL CREDITO + QUIZ -->
+      <section class="screen" id="s10">
+        <p class="kicker">Parte 2 · La mappa · 6'</p>
+        <h2>Le tecnologie digitali sul ciclo del credito</h2>
+        <p class="sub">Modalità <b>Esplora</b>: clicca ogni fase e vedi le tecnologie digitali con descrizione ed esempio. Poi passa alla modalità <b>Quiz</b>: l'aula deve abbinare ogni tecnologia alla fase giusta.</p>
+        <div class="toolrow" style="margin:0 0 14px;">
+          <button class="btn small" id="modeExplore">🔍 Esplora</button>
+          <button class="btn ghost small" id="modeQuiz">🎯 Quiz aula</button>
+        </div>
+        <div class="cycle" id="cycleRow"></div>
+        <div id="phasePanel"></div>
+        <div id="quizBox" style="display:none;">
+          <div id="quizScore"></div>
+          <div class="q" id="quizQ"></div>
+          <p class="hint">Chiedi all'aula, poi clicca la fase scelta qui sopra. Verde = giusto, rosso = riprova.</p>
+        </div>
+      </section>
+
+      <!-- 11 · FOCUS IOT -->
+      <section class="screen" id="s11">
+        <p class="kicker">Parte 3 · Focus 1 di 3 · 15'</p>
+        <h2>📡 IoT e sensoristica di campo</h2>
+        <p class="sub">La "ground truth": senza dato a terra continuo e affidabile, niente dMRV credibile.</p>
+        <div class="tabs" data-group="iot">
+          <div class="tab active" data-pane="iot1">Come funziona</div>
+          <div class="tab" data-pane="iot2">Cosa fa per il carbon farming</div>
+          <div class="tab" data-pane="iot3">Limiti</div>
+          <div class="tab" data-pane="iot4">📊 Infografica</div>
+          <div class="tab" data-pane="iot5">🎮 Gioco: costruisci la catena</div>
+        </div>
+        <div class="tabpanes">
+          <div class="pane active" id="iot1">
+            <p><b>La catena: sensore → connettività → cloud.</b></p>
+            <ul>
+              <li><b>Sensori:</b> umidità e temperatura del suolo, CO₂, sonde spettroscopiche NIR per il carbonio organico (SOC), stazioni meteo, camere di flusso automatiche.</li>
+              <li><b>Connettività:</b> reti LPWAN (LoRaWAN, NB-IoT) pensate per il campo — anni di batteria, chilometri di raggio, costi bassi.</li>
+              <li><b>Edge computing:</b> il sensore pre-elabora e trasmette solo ciò che serve.</li>
+            </ul>
+          </div>
+          <div class="pane" id="iot2">
+            <ul>
+              <li>Genera il <b>dato a terra continuo e georeferenziato</b> che calibra modelli e satelliti: è la verità di campo del dMRV.</li>
+              <li><b>Misura diretta dei flussi</b> (camere CO₂/N₂O) e dei proxy del SOC (sonde spettroscopiche) → meno campionamenti manuali, il costo n.1 dell'MRV.</li>
+              <li><b>Verifica oggettiva delle pratiche:</b> il sensore documenta quando e come si irriga o si lavora — senza autodichiarazioni.</li>
+            </ul>
+          </div>
+          <div class="pane" id="iot3">
+            <ul>
+              <li class="warn">Manutenzione e calibrazione in ambiente ostile: fango, animali, furti, batterie.</li>
+              <li class="warn">Copertura di rete nelle aree rurali ancora disomogenea.</li>
+              <li class="warn">Rappresentatività spaziale: un sensore misura un punto, il campo è variabile.</li>
+              <li class="warn">Le misure di flusso restano costose per ettaro: si usano su siti campione.</li>
+            </ul>
+          </div>
+          <div class="pane" id="iot4">
+            <p style="margin-bottom:10px;"><b>Infografica NotebookLM</b> — generala dal notebook (Studio → Infografica), scarica l'immagine, mettila in questa cartella e incolla qui il nome del file.</p>
+            <div class="imgslot" data-key="iotInfo"></div>
+          </div>
+          <div class="pane" id="iot5">
+            <p><b>Dal suolo al credito: in che ordine viaggia il dato?</b> Clicca i passaggi nell'ordine giusto.</p>
+            <p class="vid-label">La tua sequenza</p>
+            <div id="iotSeq"></div>
+            <p class="vid-label">Passaggi disponibili</p>
+            <div id="iotPool"></div>
+            <div class="toolrow"><button class="btn ghost small" id="iotRestart">↺ Ricomincia</button><span id="iotMsg" class="hint"></span></div>
+          </div>
+        </div>
+        <div class="takeaway"><b>Take-away:</b> il fattore limitante del carbon farming non è lo spazio, è il suolo — e il suolo si misura a terra.</div>
+      </section>
+
+      <!-- 12 · FOCUS AI -->
+      <section class="screen" id="s12">
+        <p class="kicker">Parte 3 · Focus 2 di 3 · 15'</p>
+        <h2>🧠 AI e piattaforme dMRV</h2>
+        <p class="sub">Stimare dove non si campiona — e quantificare quanto ci si può fidare della stima.</p>
+        <div class="tabs" data-group="ai">
+          <div class="tab active" data-pane="ai1">Come funziona</div>
+          <div class="tab" data-pane="ai2">Cosa fa per il carbon farming</div>
+          <div class="tab" data-pane="ai3">Limiti</div>
+          <div class="tab" data-pane="ai4">📊 Infografica</div>
+          <div class="tab" data-pane="ai5">🎮 L'incertezza costa: prova tu</div>
+        </div>
+        <div class="tabpanes">
+          <div class="pane active" id="ai1">
+            <p>Machine learning addestrato su <b>campionamenti a terra + satellite + meteo + suolo</b> → stima SOC ed emissioni dove non si campiona. Accanto al ML, i modelli di processo (RothC, DayCent) simulano la dinamica del carbonio nel tempo.</p>
+          </div>
+          <div class="pane" id="ai2">
+            <ul>
+              <li><b>Riduce drasticamente i campionamenti</b> — il costo n.1 dell'MRV.</li>
+              <li><b>Quantifica l'incertezza:</b> i crediti vengono scontati (buffer) in base all'incertezza. Meno incertezza = più crediti vendibili.</li>
+              <li><b>Piattaforme integrate:</b> ingestione dati, modellazione, reporting automatico verso lo standard (Verra VM0042, Label Bas Carbone, CRCF).</li>
+            </ul>
+          </div>
+          <div class="pane" id="ai3">
+            <ul>
+              <li class="warn">"Garbage in, garbage out": i modelli valgono quanto i dati di calibrazione.</li>
+              <li class="warn">Trasferibilità: un modello addestrato in un pedoclima può fallire in un altro.</li>
+              <li class="warn">Scatola nera vs. verificabilità: chi certifica deve poter capire come nasce la stima → ponte verso il prossimo focus.</li>
+            </ul>
+          </div>
+          <div class="pane" id="ai4">
+            <p style="margin-bottom:10px;"><b>Infografica NotebookLM — "La fabbrica della stima"</b>: dai campioni di suolo alla mappa del carbonio con incertezza. Generala, scaricala in questa cartella e incolla qui il nome del file.</p>
+            <div class="imgslot" data-key="aiInfo"></div>
+          </div>
+          <div class="pane" id="ai5">
+            <p><b>Quanto vale ridurre l'incertezza?</b> L'azienda della nostra simulazione sequestra 200 t/anno. Muovi l'incertezza della stima e guarda cosa succede a crediti e ricavi (prezzo: 40 €/credito).</p>
+            <div class="unc-box">
+              <div style="display:flex; justify-content:space-between; font-size:.82rem; color:var(--ink-dim);"><span>Incertezza della stima</span><b id="uncVal" style="color:var(--amber);">±25%</b></div>
+              <input type="range" id="uncSlider" min="10" max="40" value="25">
+              <div class="unc-out">
+                <div class="o"><div class="v" id="uncBuf">—</div><div class="l">Buffer trattenuto</div></div>
+                <div class="o"><div class="v" id="uncCred">—</div><div class="l">Crediti emessi (su 200 t)</div></div>
+                <div class="o"><div class="v" id="uncRev">—</div><div class="l">Ricavo (40 €/credito)</div></div>
+              </div>
+              <p class="hint">Ogni punto di incertezza in meno è denaro: ecco perché si investe in sensori e modelli migliori. (Regola semplificata: buffer ≈ 0,7 × incertezza.)</p>
+            </div>
+          </div>
+        </div>
+        <div class="takeaway"><b>Take-away:</b> l'AI non elimina la misura — la <b>moltiplica</b>: pochi punti misurati bene diventano una mappa intera, con un'incertezza dichiarata.</div>
+      </section>
+
+      <!-- 13 · FOCUS BLOCKCHAIN -->
+      <section class="screen" id="s13">
+        <p class="kicker">Parte 3 · Focus 3 di 3 · 15'</p>
+        <h2>⛓️ Blockchain e registri dei crediti</h2>
+        <p class="sub">Il "notaio digitale condiviso": rispondere alla crisi di fiducia del mercato volontario.</p>
+        <div class="tabs" data-group="bc">
+          <div class="tab active" data-pane="bc1">Come funziona</div>
+          <div class="tab" data-pane="bc2">Il problema che risolve</div>
+          <div class="tab" data-pane="bc3">Cosa fa per il carbon farming</div>
+          <div class="tab" data-pane="bc4">Limiti</div>
+          <div class="tab" data-pane="bc5">🎬 Video</div>
+          <div class="tab" data-pane="bc6">🎮 Prova a manomettere la catena</div>
+        </div>
+        <div class="tabpanes">
+          <div class="pane active" id="bc1">
+            <p>Senza tecnicismi: un <b>registro distribuito</b> di cui nessun singolo attore controlla la scrittura. Tre concetti bastano:</p>
+            <ul>
+              <li><b>Immutabilità:</b> ciò che è registrato non si riscrive di nascosto.</li>
+              <li><b>Token:</b> un'unità digitale unica e non duplicabile — perfetta per rappresentare un credito.</li>
+              <li><b>Smart contract:</b> regole che si eseguono da sole al verificarsi di condizioni misurabili.</li>
+            </ul>
+          </div>
+          <div class="pane" id="bc2">
+            <p>Il mercato volontario soffre di <b>doppio conteggio, scarsa tracciabilità e crediti "fantasma"</b> → crisi di fiducia (inchieste 2023 sui crediti REDD+). Quando la fiducia crolla, i prezzi crollano e gli agricoltori seri smettono di essere pagati.</p>
+          </div>
+          <div class="pane" id="bc3">
+            <ul>
+              <li><b>Tokenizzazione:</b> ogni credito ha identità unica, storia tracciabile e ritiro (retirement) pubblico, verificabile da chiunque.</li>
+              <li><b>Smart contract + dMRV:</b> pagamento automatico all'agricoltore al verificarsi delle condizioni misurate. <b>Il cerchio si chiude: il sensore misura → l'AI stima → la blockchain certifica e paga.</b></li>
+              <li><b>Trasparenza di filiera:</b> chi compra il credito vede l'intera catena fino al campo.</li>
+            </ul>
+          </div>
+          <div class="pane" id="bc4">
+            <ul>
+              <li class="warn"><b>Problema dell'oracolo:</b> la blockchain garantisce l'integrità del dato <i>registrato</i>, non la sua <i>veridicità</i>. Se entra spazzatura, resta spazzatura — immutabile.</li>
+              <li class="warn">Consumo energetico: marginale col proof-of-stake, ma va detto.</li>
+              <li class="warn">Rischio "blockchain-washing": usare la parola per vendere.</li>
+              <li class="warn">Volatilità crypto vs. serietà di un registro: casi Toucan/Flowcarbon e la reazione di Verra.</li>
+            </ul>
+          </div>
+          <div class="pane" id="bc5">
+            <p style="margin-bottom:10px;"><b>Il tuo video sulla blockchain.</b> Dopo il video, passa al tab 🎮: la dimostrazione pratica vale più di mille slide.</p>
+            <div style="max-width:780px; margin:0 auto;">
+              <div class="yt" data-key="bcVid" data-default="" data-t="Video blockchain da inserire"></div>
+            </div>
+          </div>
+          <div class="pane" id="bc6">
+            <p><b>Ogni blocco contiene i dati di un credito + l'impronta (hash) del blocco precedente.</b> Prova a modificare il blocco 1 o 2: la catena si "rompe" e tutti se ne accorgono. È l'immutabilità, vista coi tuoi occhi.</p>
+            <div id="bcChain"></div>
+            <div class="toolrow">
+              <button class="btn small" id="bcSeal">🔨 Ri-sigilla la catena (da capo, alla luce del sole)</button>
+              <span class="hint">Morale: si può riscrivere la storia solo rifacendo <i>tutta</i> la catena — e tutti lo vedono.</span>
+            </div>
+          </div>
+        </div>
+        <div class="takeaway"><b>Take-away:</b> la blockchain non crea fiducia dal nulla — <b>trasporta</b> la fiducia generata dalla misura. Per questo viene per ultima nella catena.</div>
+      </section>
+
+      <!-- 14 · CHAIN ANIMATION -->
+      <section class="screen" id="s14">
+        <p class="kicker">Parte 4 · Sintesi · 5'</p>
+        <h2>Il viaggio di un credito di carbonio</h2>
+        <p class="sub">Premi "Avanti" e segui una tonnellata di CO₂ dal campo al ritiro del credito.</p>
+        <div id="chainStage"></div>
+        <div id="chainCaption">Premi <b>Avanti</b> per iniziare il viaggio.</div>
+        <div class="toolrow">
+          <button class="btn" id="chainNext">Avanti →</button>
+          <button class="btn ghost" id="chainReset">Ricomincia</button>
+        </div>
+      </section>
+
+      <!-- 15 · SIMULAZIONE -->
+      <section class="screen" id="s15">
+        <p class="kicker">Parte 4 · Simulazione · 60'</p>
+        <h2>🎲 Lo stack digitale del credito</h2>
+        <p class="sub"><b>Come funziona, in una frase:</b> l'Azienda Valdichiara vuole vendere crediti di carbonio, ma prima i quattro gruppi devono mettersi d'accordo su <b>quattro scelte tecnologiche</b> — e ogni scelta sposta soldi, dati e rischi da un gruppo all'altro. Si gioca in <b>4 round da 10–15 minuti</b>: un round = una decisione, scritta sul contratto. Chi non firma, non guadagna nulla.</p>
+        <div class="sim-roles">
+          <div class="role" style="background:linear-gradient(160deg,#14321f,var(--card));"><span class="emoji">🚜</span><h4>Agricoltori</h4><p>Vogliono guadagnare dai crediti — e capire di chi sono i <b>dati</b> raccolti sul loro campo.</p></div>
+          <div class="role" style="background:linear-gradient(160deg,#11293a,var(--card));"><span class="emoji">📊</span><h4>Fornitore dMRV</h4><p>Vende la tecnologia di monitoraggio. Più tecnologia vende, più guadagna. I dati sulla sua piattaforma valgono oro.</p></div>
+          <div class="role" style="background:linear-gradient(160deg,#34240f,var(--card));"><span class="emoji">🔍</span><h4>Verificatore</h4><p>Decide <b>quanti crediti</b> emettere in base alla qualità dei dati. Senza la sua firma non esiste nessun credito.</p></div>
+          <div class="role" style="background:linear-gradient(160deg,#2c1430,var(--card));"><span class="emoji">🏢</span><h4>Buyer corporate</h4><p>Compra i crediti. Paga di più se la tecnologia rende i crediti tracciabili e difendibili in pubblico.</p></div>
+        </div>
+        <p class="vid-label">I 4 round (un round = una decisione da scrivere sul contratto)</p>
+        <div class="sim-decisions">
+          <div class="dec"><h5>Round 1 · 10' — Quanta tecnologia di misura?</h5><p><b>Stack A</b> solo satellite+AI: economico ma incerto (±35% → 150 crediti). <b>Stack B</b> +sensori IoT: costa di più ma è preciso (±15% → 180 crediti). <i>E chi paga?</i></p></div>
+          <div class="dec"><h5>Round 2 · 10' — Di chi sono i dati?</h5><p><b>D1</b> restano chiusi sulla piattaforma del fornitore. <b>D2</b> sono dell'agricoltore, esportabili, e il verificatore accede al dato grezzo (+500 €).</p></div>
+          <div class="dec"><h5>Round 3 · 10' — Quale registro per i crediti?</h5><p><b>R1</b> database del certificatore (gratis, opaco). <b>R2</b> registro blockchain: chiunque può verificare il ritiro del credito (+800 €). Con R2: pagamento via smart contract?</p></div>
+          <div class="dec"><h5>Round 4 · 15' — Prezzo e firma</h5><p>Si negozia il <b>prezzo a credito</b> e chi paga ciascun costo. Si compila e firma il contratto (ultima pagina del documento stampabile). Conti alla mano: l'agricoltore ci guadagna davvero?</p></div>
+        </div>
+        <div id="simTimer">
+          <div id="simTime">60:00</div>
+          <div id="simPhase">Prima dei round: 10' lettura schede e strategia di gruppo</div>
+          <div class="sim-controls">
+            <button class="btn" id="simStart">▶ Avvia</button>
+            <button class="btn ghost" id="simPause">⏸ Pausa</button>
+            <button class="btn ghost" id="simNext">⏭ Salta al round successivo</button>
+            <button class="btn ghost" id="simReset">↺ Reset</button>
+          </div>
+        </div>
+        <p class="hint" style="text-align:center;">Scansione: 10' lettura → R1 10' → R2 10' → R3 10' → R4 15' → 5' firma e conti. Il banner qui sopra cambia da solo a ogni fase; "Salta" se un round si chiude prima.</p>
+      </section>
+
+      <!-- 16 · DEBRIEF -->
+      <section class="screen" id="s16">
+        <p class="kicker">Chiusura · 10'</p>
+        <h2>Debrief e messaggi finali</h2>
+        <div class="chain" style="justify-content:flex-start; margin:10px 0 22px;">
+          <div class="chain-node">🌱 Campo</div><div class="chain-arrow">→</div>
+          <div class="chain-node">📡 Sensore</div><div class="chain-arrow">→</div>
+          <div class="chain-node">🧠 AI</div><div class="chain-arrow">→</div>
+          <div class="chain-node">💻 Piattaforma dMRV</div><div class="chain-arrow">→</div>
+          <div class="chain-node">⛓️ Registro</div><div class="chain-arrow">→</div>
+          <div class="chain-node">💶 Mercato</div>
+        </div>
+        <div class="grid g3">
+          <div class="card"><span class="emoji">🧭</span><h3>Dal debrief della simulazione</h3><p>Quale stack avete scelto, e perché? Di chi sono i dati del campo? Il registro blockchain valeva il suo costo? Chi voleva lo smart contract e chi no?</p></div>
+          <div class="card"><span class="emoji">⚖️</span><h3>Messaggio finale</h3><p>La tecnologia non sostituisce l'agronomia né la fiducia — le rende <b>scalabili</b>. Il fattore limitante resta la qualità del dato a terra (problema dell'oracolo!).</p></div>
+          <div class="card"><span class="emoji">💬</span><h3>Domanda stimolo</h3><p>«Vi fidereste di più di un credito verificato da un auditor umano o da un sistema dMRV automatizzato? E i dati del campo: di chi devono essere?»</p></div>
+        </div>
+        <div class="takeaway" style="margin-top:24px;"><b>Una frase da portare a casa:</b> il sensore misura, l'AI stima, la blockchain certifica e paga — ma è il suolo che sequestra.</div>
+        <h2 style="font-size:1.3rem; margin-top:28px;">📝 Prima di salutarci: il vostro feedback</h2>
+        <p class="sub">Tre domande veloci: quale tecnologia approfondire, cosa rivedere, e quanto vi sentite a vostro agio con gli strumenti visti oggi.</p>
+        <div style="display:flex; gap:16px; align-items:center; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:10px 16px; margin-bottom:14px;">
+          <img src="data:image/png;base64,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" alt="QR feedback" style="width:120px; height:120px; border-radius:8px; background:#fff; padding:3px;">
+          <div>
+            <p style="font-size:.74rem; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.1em;">Inquadra per rispondere</p>
+            <p style="font-size:1.1rem; font-weight:800;">menti.com · codice <b style="color:var(--green); font-size:1.3rem;">7577 1443</b></p>
+            <p class="hint" style="margin-top:2px;">3 slide: approfondimenti · cose da rivedere · autovalutazione. Valido 14 giorni.</p>
+          </div>
+        </div>
+        <div class="menti" data-key="feedback" data-title="Mentimeter — feedback di fine lezione (risultati live)" data-default="https://www.mentimeter.com/app/presentation/al7uwdxqm61f265q29ghfrqtnnx3mjy6/embed"></div>
+      </section>
+
+    </div>
+
+    <div id="footnav">
+      <button class="btn ghost" id="prevBtn">← Indietro</button>
+      <span class="where" id="whereTxt"></span>
+      <button class="btn" id="nextBtn">Avanti →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= NAV ================= */
+const SCREENS = [
+  {id:'s0',  part:'',                          label:'Titolo',                       t:''},
+  {id:'s1',  part:'Parte 1 · Premessa (25\')', label:'Apertura + Mentimeter',        t:'5\''},
+  {id:'s2',  part:'',                          label:'Le 5 ondate + video',          t:'8\''},
+  {id:'s3',  part:'',                          label:'Tecnologia emergente',         t:'7\''},
+  {id:'s4',  part:'',                          label:'Hype Cycle spiegato',          t:'5\''},
+  {id:'s5',  part:'Parte 2 · Trend (35\')',    label:'Trend generali',               t:'6\''},
+  {id:'s6',  part:'',                          label:'Digitale × sostenibilità',     t:'6\''},
+  {id:'s7',  part:'',                          label:'Digitale × carbon farming',    t:'6\''},
+  {id:'s8',  part:'',                          label:'Cos\'è MRV / dMRV',            t:'6\''},
+  {id:'s9',  part:'',                          label:'MRV: il collo di bottiglia',   t:'5\''},
+  {id:'s10', part:'',                          label:'Ciclo del credito + quiz',     t:'6\''},
+  {id:'s11', part:'Parte 3 · Focus (45\')',    label:'📡 IoT e sensoristica',        t:'15\''},
+  {id:'s12', part:'',                          label:'🧠 AI e piattaforme dMRV',     t:'15\''},
+  {id:'s13', part:'',                          label:'⛓️ Blockchain e registri',     t:'15\''},
+  {id:'s14', part:'Parte 4 · Chiusura (75\')', label:'Il viaggio di un credito',     t:'5\''},
+  {id:'s15', part:'',                          label:'🎲 Simulazione: lo stack',     t:'60\''},
+  {id:'s16', part:'',                          label:'Debrief e take-away',          t:'10\''},
+];
+let cur = 0;
+const nav = document.getElementById('nav');
+SCREENS.forEach((s,i)=>{
+  if(s.part){const p=document.createElement('div'); p.className='nav-part'; p.textContent=s.part; nav.appendChild(p);}
+  const d=document.createElement('div'); d.className='nav-item'; d.dataset.i=i;
+  d.innerHTML=`<span>${s.label}</span>${s.t?`<span class="t">${s.t}</span>`:''}`;
+  d.onclick=()=>go(i); nav.appendChild(d);
+});
+function go(i){
+  if(i<0||i>=SCREENS.length) return;
+  document.querySelectorAll('.screen').forEach(el=>el.classList.remove('active'));
+  document.getElementById(SCREENS[i].id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.toggle('active', +el.dataset.i===i));
+  cur=i;
+  document.getElementById('progFill').style.width=(i/(SCREENS.length-1)*100)+'%';
+  document.getElementById('whereTxt').textContent=`${i+1} / ${SCREENS.length} — ${SCREENS[i].label}`;
+  document.getElementById('stage').scrollTop=0;
+  if(SCREENS[i].id==='s3') drawExpo();
+  if(SCREENS[i].id==='s5' && typeof showTrend==='function') showTrend(tIdx);
+  if(SCREENS[i].id==='s6' && typeof showSus==='function') showSus(susIdx);
+}
+document.getElementById('prevBtn').onclick=()=>go(cur-1);
+document.getElementById('nextBtn').onclick=()=>go(cur+1);
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if(e.key==='ArrowRight'||e.key==='PageDown') go(cur+1);
+  if(e.key==='ArrowLeft'||e.key==='PageUp') go(cur-1);
+});
+document.getElementById('toggleNav').onclick=()=>document.getElementById('sidebar').classList.toggle('hidden');
+document.getElementById('fsBtn').onclick=()=>{
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+  else document.exitFullscreen();
+};
+const t0=Date.now();
+setInterval(()=>{
+  const s=Math.floor((Date.now()-t0)/1000);
+  document.getElementById('clockVal').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+},1000);
+
+/* ================= MENTIMETER EMBED ================= */
+function extractSrc(text){
+  const m=text.match(/src=["']([^"']+)["']/);
+  if(m) return m[1];
+  return text.trim();
+}
+document.querySelectorAll('.menti').forEach(box=>{
+  const key='menti_'+box.dataset.key;
+  function render(){
+    const url=localStorage.getItem(key)||box.dataset.default;
+    if(url){
+      box.innerHTML=`<div class="mhead">📊 ${box.dataset.title}
+        <button class="btn ghost small cfg">⚙️ cambia link</button></div>
+        <iframe src="${url}" allow="fullscreen"></iframe>`;
+      box.querySelector('.cfg').onclick=()=>{localStorage.removeItem(key); box.dataset.default=''; render();};
+    } else {
+      box.innerHTML=`<div class="mhead">📊 ${box.dataset.title}</div>
+        <div class="setup"><input placeholder="Incolla il link embed di Mentimeter (o l'intero codice <iframe>)..."><button class="btn small">Salva</button></div>
+        <p class="help">Su Mentimeter: apri la presentazione → <b>Share</b> → tab <b>Embed</b> → copia il codice e incollalo qui (basta una volta: resta salvato su questo computer). In alternativa puoi incollare il link "Presentation sharing" dei risultati. Per far votare gli studenti proietta il codice menti.com che Mentimeter mostra in alto nella slide.</p>`;
+      const inp=box.querySelector('input');
+      box.querySelector('button').onclick=()=>{
+        const v=extractSrc(inp.value);
+        if(v.startsWith('http')){localStorage.setItem(key,v); render();}
+        else inp.style.borderColor='var(--rose)';
+      };
+    }
+  }
+  render();
+});
+
+/* ================= VIDEO SLOTS (configurabili) ================= */
+function ytId(url){
+  const m=url.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{6,15})/);
+  return m?m[1]:null;
+}
+function isLocal(url){ return /\.(mp4|mov|webm|m4v)(\?.*)?$/i.test(url.trim()); }
+/* slot immagini (infografiche NotebookLM ecc.) */
+document.querySelectorAll('.imgslot').forEach(box=>{
+  const key='img_'+box.dataset.key;
+  const bar=document.createElement('div'); bar.className='vbar';
+  box.parentNode.insertBefore(bar, box.nextSibling);
+  function render(){
+    const u=localStorage.getItem(key);
+    if(u){
+      box.innerHTML=`<img src="${u}" alt="infografica">`;
+      box.onclick=()=>window.open(u,'_blank');
+    } else {
+      box.innerHTML=`<div style="font-size:2rem;">🖼️</div><div>Nessuna infografica — usa ⚙️ qui sotto per impostarla</div>`;
+      box.onclick=()=>edit();
+    }
+    bar.innerHTML=`<span></span><button class="gear">⚙️ cambia immagine</button>`;
+    bar.querySelector('.gear').onclick=()=>edit();
+  }
+  function edit(){
+    bar.innerHTML='';
+    const ed=document.createElement('div'); ed.className='vedit'; ed.style.flex='1';
+    ed.innerHTML=`<input value="${localStorage.getItem(key)||''}" placeholder="Nome del file immagine in questa cartella (es. infografica-iot.png) o URL..."><button class="btn small">Salva</button><button class="btn ghost small">Annulla</button>`;
+    bar.appendChild(ed);
+    const inp=ed.querySelector('input');
+    const [save,cancel]=ed.querySelectorAll('button');
+    save.onclick=()=>{
+      const v=inp.value.trim();
+      if(/\.(png|jpe?g|webp|gif|svg)(\?.*)?$/i.test(v)||v.startsWith('http')){ localStorage.setItem(key,v); render(); }
+      else inp.style.borderColor='var(--rose)';
+    };
+    cancel.onclick=render;
+  }
+  render();
+});
+document.querySelectorAll('.yt').forEach(y=>{
+  const key='vid_'+y.dataset.key;
+  const wrap=document.createElement('div');
+  y.parentNode.insertBefore(wrap,y); wrap.appendChild(y);
+  const bar=document.createElement('div'); bar.className='vbar'; wrap.appendChild(bar);
+  function url(){ return localStorage.getItem(key)||y.dataset.default; }
+  function renderBar(editing){
+    if(editing){
+      bar.innerHTML='';
+      const ed=document.createElement('div'); ed.className='vedit'; ed.style.flex='1';
+      ed.innerHTML=`<input value="${url()}" placeholder="Incolla un link YouTube..."><button class="btn small">Salva</button><button class="btn ghost small">Annulla</button>`;
+      bar.appendChild(ed);
+      const [inp]=ed.querySelectorAll('input');
+      const [save,cancel]=ed.querySelectorAll('button');
+      save.onclick=()=>{ if(ytId(inp.value)||isLocal(inp.value)){ localStorage.setItem(key,inp.value.trim()); renderThumb(); renderBar(false);} else inp.style.borderColor='var(--rose)'; };
+      cancel.onclick=()=>renderBar(false);
+    } else {
+      bar.innerHTML=`${url()&&!isLocal(url())?`<a href="${url()}" target="_blank" rel="noopener">↗ Apri su YouTube (se l'embed non parte)</a>`:'<span></span>'}
+        <button class="gear">⚙️ cambia video</button>`;
+      bar.querySelector('.gear').onclick=()=>renderBar(true);
+    }
+  }
+  function renderThumb(){
+    const u=url();
+    if(!u){
+      y.innerHTML=`<div class="play">📺</div><div class="vtitle">Nessun video impostato — clicca ⚙️ qui sotto e incolla il link</div>`;
+      y.onclick=()=>renderBar(true);
+      return;
+    }
+    if(isLocal(u)){
+      y.innerHTML=`<div class="play">🎞️</div><div class="vtitle">${localStorage.getItem(key)?'Video locale: '+u:(y.dataset.t||'')}</div>`;
+      y.onclick=()=>{
+        y.innerHTML=`<video controls autoplay style="width:100%;height:100%;" src="${u}"></video>`;
+        y.onclick=null;
+      };
+      return;
+    }
+    const id=ytId(u);
+    y.innerHTML=`<img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="" onerror="this.style.display='none'"><div class="play">▶️</div><div class="vtitle">${localStorage.getItem(key)?'Video personalizzato':(y.dataset.t||'')}</div>`;
+    y.onclick=()=>{
+      y.innerHTML=`<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+      y.onclick=null;
+    };
+  }
+  renderThumb(); renderBar(false);
+});
+
+/* ================= ICEBREAKER (con fatti per gli studenti) ================= */
+const ICE=[
+  ['📱','Smartphone','Nella vostra tasca c\'è <span class="num">più potenza di calcolo di tutta la NASA del 1969</span> — quella che portò l\'uomo sulla Luna. E lo toccate centinaia di volte al giorno.'],
+  ['🗺️','Navigatore GPS','Una costellazione di <span class="num">31 satelliti a 20.200 km</span> di quota. Fino al 2000 il segnale civile era degradato a ~100 m di errore; oggi pochi metri — e <span class="num">2 cm</span> col RTK dei trattori.'],
+  ['💳','Pagamento digitale','In Italia i pagamenti digitali hanno ormai <span class="num">raggiunto e superato il contante</span>: centinaia di miliardi di euro l\'anno che viaggiano come bit.'],
+  ['☁️','Cloud (foto, mail)','La "nuvola" è molto fisica: data center che consumano <span class="num">~1-2% dell\'elettricità mondiale</span>. Le vostre foto vivono lì, replicate più volte.'],
+  ['🎵','Streaming','Lo streaming video da solo è circa <span class="num">due terzi di tutto il traffico internet</span> mondiale.'],
+  ['🚌','App trasporti','Gli orari "in tempo reale" esistono perché ogni bus trasmette la posizione GPS <span class="num">ogni pochi secondi</span>: è IoT urbano — lo stesso principio dei sensori nel campo.'],
+  ['⌚','Smartwatch','Un sensore al polso che stima sonno e battito <span class="num">in continuo</span>, senza laboratorio: esattamente quello che i sensori di suolo fanno col carbonio.'],
+  ['🌦️','App meteo','Dietro l\'icona del sole: modelli numerici su supercomputer + satelliti. <span class="num">Prima e ultima ondata digitale</span> che lavorano insieme.'],
+  ['💬','Messaggistica','Solo WhatsApp consegna oltre <span class="num">100 miliardi di messaggi al giorno</span>, cifrati end-to-end.'],
+  ['🔑','SPID / CIE','L\'identità digitale italiana: circa <span class="num">40 milioni</span> di identità SPID attive. Lo Stato come piattaforma.'],
+  ['🤖','Assistente AI','L\'adozione <span class="num">più rapida nella storia della tecnologia</span>: centinaia di milioni di utenti in pochi anni. Nessuna ondata era mai cresciuta così.'],
+  ['📰','News online','L\'algoritmo del feed ha già deciso cosa avete letto stamattina: <span class="num">l\'AI vi ha profilato prima del caffè</span>.']
+];
+const ig=document.getElementById('iceGrid');
+ICE.forEach(([e,l,f])=>{
+  const d=document.createElement('div'); d.className='ice';
+  d.innerHTML=`<div class="emoji">${e}</div><p>${l}</p>`;
+  d.onclick=()=>{
+    d.classList.toggle('on');
+    const box=document.getElementById('iceFact');
+    if(d.classList.contains('on')){
+      box.innerHTML=`<div class="icefact"><span class="bigemoji">${e}</span><b>${l}</b> — ${f}</div>`;
+    } else if(box.textContent.includes(l)){ box.innerHTML=''; }
+  };
+  ig.appendChild(d);
+});
+
+/* ================= TIMELINE ================= */
+const WAVES=[
+  {e:'🖥️', y:'\'50–\'70', name:'Il calcolo', desc:'Mainframe e primi modelli di simulazione — inclusi i primi modelli climatici. Il computer entra nelle grandi organizzazioni.', cost:'Crolla il costo del <b>calcolo</b>: da stanze intere a chip.', cf:'Senza simulazione numerica non esisterebbero i modelli del carbonio nel suolo (RothC nasce in quegli ambienti).'},
+  {e:'🗺️', y:'\'80–\'90', name:'PC e GIS', desc:'Il personal computer democratizza l\'informatica. Nasce la cartografia digitale: il GIS. (Orgoglio italiano: la Olivetti Programma 101 aveva anticipato tutti già nel 1965.)', cost:'Crolla il costo dell\'<b>informazione geografica</b>.', cf:'Ogni progetto carbon parte da una mappa: particelle, suoli, uso del suolo.'},
+  {e:'🌐', y:'\'90–2000', name:'Internet e GPS', desc:'La rete connette tutto; nel 2000 il GPS viene aperto al civile in piena precisione.', cost:'Crolla il costo della <b>comunicazione</b> e del <b>posizionamento</b>.', cf:'Nasce l\'agricoltura di precisione: guida assistita, mappe di resa, rateo variabile.'},
+  {e:'📱', y:'2007–2015', name:'Smartphone, cloud, big data', desc:'Un sensore connesso in tasca a ogni persona — agricoltori inclusi. Il cloud elimina i server locali.', cost:'Crolla il costo del <b>sensore</b> e dell\'<b>archiviazione</b>.', cf:'L\'agricoltore fotografa, registra, geolocalizza: il dato di campo diventa quotidiano.'},
+  {e:'🛰️', y:'2015–oggi', name:'IoT, AI, satelliti, blockchain', desc:'La convergenza: sensori ovunque, AI che impara, costellazioni satellitari, registri distribuiti.', cost:'Crolla il costo della <b>previsione</b> e dell\'<b>osservazione della Terra</b> (Sentinel-2: gratis, ogni 5 giorni).', cf:'È la convergenza che rende possibile il dMRV — e questa lezione.'}
+];
+const tl=document.getElementById('tl');
+WAVES.forEach((w,i)=>{
+  const d=document.createElement('div'); d.className='wave'+(i===0?' active':'');
+  d.innerHTML=`<div class="dot">${w.e}</div><h4>${w.name}</h4><p>${w.y}</p>`;
+  d.onclick=()=>{document.querySelectorAll('.wave').forEach(x=>x.classList.remove('active')); d.classList.add('active'); showWave(i);};
+  tl.appendChild(d);
+});
+function showWave(i){
+  const w=WAVES[i];
+  document.getElementById('wavePanel').innerHTML=
+   `<h3>${w.e} ${w.name} <span style="color:var(--ink-faint); font-weight:400; font-size:.85rem;">(${w.y})</span></h3>
+    <div class="cols"><div><p>${w.desc}</p><p style="margin-top:10px; color:var(--ink);">🌱 <i>${w.cf}</i></p></div>
+    <div class="cost">📉 ${w.cost}</div></div>`;
+}
+showWave(0);
+
+/* ================= SOSTENIBILITÀ: GAUGE + BARRE ================= */
+const SUS=[
+  {n:'🇪🇺 Twin transition', title:'Twin transition: verde e digitale insieme',
+   g:{v:30, max:100, suf:'%', lab:'del bilancio UE 2021-27 è vincolato a obiettivi climatici'},
+   bars:[['Investimenti del Green Deal nel decennio — <b>~1.000 mld €</b>',100,'#34d399'],
+         ['Quota digitale di NextGenerationEU — <b>~150 mld €</b>',15,'#60a5fa']],
+   note:'<b>Le due transizioni si finanziano insieme:</b> niente Green Deal senza dati, niente senso nei dati senza obiettivi ambientali. Chi sa fare entrambe (voi, dopo questo master) sta nell\'intersezione più ricca.'},
+  {n:'📑 ESG e CSRD', title:'CSRD: la sostenibilità entra in bilancio',
+   g:{v:4, max:5, suf:'×', lab:'più aziende obbligate alla rendicontazione di sostenibilità'},
+   bars:[['Prima, con la NFRD — <b>~11.700 imprese</b>',23,'#5f7a71'],
+         ['Con la CSRD a regime — <b>~50.000 imprese</b>',100,'#34d399']],
+   note:'E non basta dichiarare: i dati vanno <b>verificati da terzi</b>, come il bilancio economico. Esplode la domanda di dati ambientali misurabili — anche dall\'agricoltura, che sta nelle filiere di quasi tutte queste aziende.'},
+  {n:'🛰️ Copernicus', title:'Copernicus: il termometro del pianeta, gratis',
+   g:{v:16, max:20, suf:' TB', lab:'di dati distribuiti gratuitamente OGNI GIORNO dal programma europeo'},
+   bars:[['Una scena satellitare negli anni \'80 — <b>~4.000 $</b>',100,'#fb7185'],
+         ['La stessa scena con Sentinel, oggi — <b>0 $</b>',2,'#34d399']],
+   note:'<b>Bene pubblico:</b> lo studente, la startup, il verificatore e la multinazionale accedono agli stessi dati. È la base informativa di tutto il resto della lezione.'},
+  {n:'🌳 Tracciabilità (EUDR)', title:'EUDR: ogni prodotto risale alla sua particella',
+   g:{v:7, max:7, suf:'', lab:'materie prime sotto obbligo di geolocalizzazione: caffè, cacao, soia, palma, legno, gomma, bovini'},
+   bars:[['Deforestazione globale legata ai consumi UE — <b>~10%</b>',100,'#fb7185'],
+         ['Obiettivo del regolamento — <b>0%</b>',2,'#34d399']],
+   note:'Ogni partita importata deve essere ricondotta alle <b>coordinate della particella di origine</b>, verificate via satellite. La tracciabilità digitale passa da plus di marketing a requisito di accesso al mercato europeo.'},
+  {n:'🎭 Greenwashing → verifica', title:'La crisi di fiducia (e la risposta digitale)',
+   g:{v:53, max:100, suf:'%', lab:'dei green claims esaminati dalla Commissione UE: vaghi, fuorvianti o infondati'},
+   bars:[['Claims "verdi" vaghi o ingannevoli — <b>53%</b>',53,'#fb7185'],
+         ['Claims del tutto privi di prove — <b>40%</b>',40,'#fbbf24']],
+   note:'La risposta non è comunicare meglio: è <b>provare meglio</b> — dati indipendenti, misurabili, auditabili. Ed è esattamente il ponte verso la prossima parte: l\'MRV.'}
+];
+let susIdx=0, susAnim=null;
+const susChips=document.getElementById('susChips');
+SUS.forEach((s,i)=>{
+  const c=document.createElement('div'); c.className='tchip'+(i===0?' active':''); c.textContent=s.n;
+  c.onclick=()=>{document.querySelectorAll('#susChips .tchip').forEach(x=>x.classList.remove('active')); c.classList.add('active'); showSus(i);};
+  susChips.appendChild(c);
+});
+function showSus(i){
+  susIdx=i;
+  const s=SUS[i];
+  document.getElementById('susTitle').textContent=s.title;
+  document.getElementById('susGl').textContent=s.g.lab;
+  document.getElementById('susNote').innerHTML=s.note;
+  /* bars */
+  const bb=document.getElementById('susBars');
+  bb.innerHTML=s.bars.map(b=>`<div class="bbar"><div class="lab">${b[0]}</div><div class="track"><div class="fill" style="background:${b[2]};"></div></div></div>`).join('');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    bb.querySelectorAll('.fill').forEach((f,k)=>f.style.width=Math.max(2,s.bars[k][1])+'%');
+  }));
+  /* gauge */
+  if(susAnim) cancelAnimationFrame(susAnim);
+  const cv=document.getElementById('susGauge'), ctx=cv.getContext('2d');
+  const W=220, H=220, cx=W/2, cy=H/2, R=88;
+  const t0=performance.now(), DUR=1400;
+  function frame(now){
+    const p=Math.min(1,(now-t0)/DUR), e=1-Math.pow(1-p,3);
+    const frac=(s.g.v/s.g.max)*e;
+    ctx.clearRect(0,0,W,H);
+    ctx.lineWidth=16; ctx.lineCap='round';
+    ctx.strokeStyle='#182723';
+    ctx.beginPath(); ctx.arc(cx,cy,R,-Math.PI/2,Math.PI*1.5); ctx.stroke();
+    const grad=ctx.createLinearGradient(0,0,W,H);
+    grad.addColorStop(0,'#10b981'); grad.addColorStop(1,'#2dd4bf');
+    ctx.strokeStyle=grad;
+    ctx.shadowColor='#34d399'; ctx.shadowBlur=12;
+    ctx.beginPath(); ctx.arc(cx,cy,R,-Math.PI/2,-Math.PI/2+Math.PI*2*frac); ctx.stroke();
+    ctx.shadowBlur=0;
+    ctx.fillStyle='#e8f0ed'; ctx.font='800 44px -apple-system,sans-serif'; ctx.textAlign='center';
+    const shown=s.g.v*e;
+    ctx.fillText((s.g.v%1?shown.toFixed(1):Math.round(shown))+s.g.suf, cx, cy+14);
+    ctx.textAlign='start';
+    if(p<1) susAnim=requestAnimationFrame(frame);
+  }
+  susAnim=requestAnimationFrame(frame);
+}
+showSus(0);
+
+/* ================= TREND EXPLORER ================= */
+const TRENDS=[
+  {n:'🧠 AI generativa', title:'AI generativa e predittiva', claim:'L\'adozione più rapida nella storia della tecnologia',
+   unit:'milioni di utenti settimanali (ChatGPT)', color:'#a78bfa',
+   series:[[2022.9,1],[2023.1,100],[2023.9,150],[2024.2,300],[2025.1,400],[2025.6,700],[2025.9,800]], forecastFrom:2099,
+   kpis:[[100,' mln','utenti in 2 mesi: nessuna tecnologia era mai cresciuta così'],[800,' mln','utenti settimanali nel 2025'],[78,'%','delle aziende nel mondo usa già AI in almeno una funzione']],
+   src:'Ordini di grandezza: dati pubblici OpenAI · McKinsey State of AI'},
+  {n:'📡 IoT ed edge', title:'IoT ed edge computing', claim:'I sensori connessi hanno superato gli umani — di molto',
+   unit:'miliardi di dispositivi IoT connessi', color:'#60a5fa',
+   series:[[2015,3.8],[2017,6],[2019,8.6],[2021,11.3],[2023,15.1],[2024,18],[2027,27],[2030,40]], forecastFrom:2025,
+   kpis:[[18,' mld','dispositivi connessi nel 2024 — più del doppio dell\'umanità'],[40,' mld','previsti al 2030'],[10,' anni','di batteria per un nodo LoRaWAN in campo']],
+   src:'Ordini di grandezza: IoT Analytics, State of IoT'},
+  {n:'🛰️ Spazio low-cost', title:'Spazio "democratizzato"', claim:'Dieci volte più satelliti in dieci anni',
+   unit:'satelliti attivi in orbita', color:'#2dd4bf',
+   series:[[2010,1000],[2014,1250],[2017,1800],[2019,2300],[2021,4800],[2023,7600],[2025,11000]], forecastFrom:2099,
+   kpis:[[10,'×','satelliti attivi in 10 anni (da ~1.000 a ~11.000)'],[95,'%','in meno il costo di lancio al kg (Shuttle → razzi riutilizzabili)'],[5,' giorni','la rivisita di Sentinel-2 su ogni campo — gratis']],
+   src:'Ordini di grandezza: UCS Satellite Database · J. McDowell · ESA'},
+  {n:'👥 Digital twin', title:'Digital twin', claim:'Il mercato dei gemelli digitali raddoppia ogni ~2 anni',
+   unit:'mercato globale, miliardi di $', color:'#fbbf24',
+   series:[[2020,3],[2021,5],[2022,8],[2023,11],[2024,16],[2026,35],[2028,70],[2030,130]], forecastFrom:2025,
+   kpis:[[16,' mld$','il mercato nel 2024'],[130,' mld$','la stima al 2030'],[35,'%','di crescita annua composta']],
+   src:'Ordini di grandezza: stime di mercato convergenti (Fortune BI, M&M)'},
+  {n:'🔗 Dati aperti', title:'Interoperabilità e dati aperti', claim:'Il diluvio: i dati del mondo raddoppiano ogni ~3 anni',
+   unit:'zettabyte di dati creati per anno nel mondo', color:'#fb7185',
+   series:[[2010,2],[2013,4.4],[2016,16],[2018,33],[2020,64],[2022,101],[2024,149],[2026,221],[2028,394]], forecastFrom:2025,
+   kpis:[[149,' ZB','di dati creati nel solo 2024 (1 ZB = mille miliardi di GB)'],[90,'%','dei dati mondiali creati negli ultimi 2 anni'],[14,'','data spaces settoriali finanziati dalla UE — agricoltura inclusa']],
+   src:'Ordini di grandezza: IDC Global DataSphere · Commissione UE'}
+];
+let tIdx=0, trendAnim=null;
+const tChips=document.getElementById('trendChips');
+TRENDS.forEach((t,i)=>{
+  const c=document.createElement('div'); c.className='tchip'+(i===0?' active':''); c.textContent=t.n;
+  c.onclick=()=>{document.querySelectorAll('.tchip').forEach(x=>x.classList.remove('active')); c.classList.add('active'); showTrend(i);};
+  tChips.appendChild(c);
+});
+function fmtVal(v){ return v>=1000? (v/1000).toFixed(v%1000?1:0)+'k' : (v<10? v.toFixed(1).replace('.0','') : Math.round(v)); }
+function showTrend(i){
+  tIdx=i;
+  const t=TRENDS[i];
+  document.getElementById('tpTitle').textContent=t.title;
+  document.getElementById('tpClaim').textContent=t.claim+' — '+t.unit;
+  document.getElementById('tpSrc').textContent=t.src;
+  /* KPI count-up */
+  const kr=document.getElementById('tpKpis');
+  kr.innerHTML=t.kpis.map(()=>`<div class="kpi"><div class="v">0</div><div class="l"></div></div>`).join('');
+  const t0=performance.now(), DUR=1300;
+  function stepK(now){
+    const p=Math.min(1,(now-t0)/DUR), e=1-Math.pow(1-p,3);
+    kr.querySelectorAll('.kpi').forEach((el,k)=>{
+      const [num,suf,lab]=t.kpis[k];
+      el.querySelector('.v').textContent=(num%1?(num*e).toFixed(1):Math.round(num*e))+suf;
+      el.querySelector('.l').textContent=lab;
+    });
+    if(p<1) requestAnimationFrame(stepK);
+  }
+  requestAnimationFrame(stepK);
+  /* animated chart */
+  if(trendAnim) cancelAnimationFrame(trendAnim);
+  const cv=document.getElementById('trendCanvas'), ctx=cv.getContext('2d');
+  const W=cv.width, H=cv.height, padL=56, padR=20, padT=18, padB=34;
+  const xs=t.series.map(p=>p[0]), ys=t.series.map(p=>p[1]);
+  const x0=Math.min(...xs), x1=Math.max(...xs), yMax=Math.max(...ys)*1.08;
+  const X=x=>padL+(W-padL-padR)*(x-x0)/(x1-x0);
+  const Y=y=>H-padB-(H-padT-padB)*y/yMax;
+  function valAt(x){
+    for(let k=1;k<t.series.length;k++){
+      if(x<=t.series[k][0]){
+        const [xa,ya]=t.series[k-1],[xb,yb]=t.series[k];
+        return ya+(yb-ya)*(x-xa)/(xb-xa);
+      }
+    }
+    return ys[ys.length-1];
+  }
+  const tStart=performance.now(), CDUR=1800;
+  function frame(now){
+    const p=Math.min(1,(now-tStart)/CDUR), e=1-Math.pow(1-p,2.2);
+    const xCur=x0+(x1-x0)*e;
+    ctx.clearRect(0,0,W,H);
+    /* axes + gridlines */
+    ctx.strokeStyle='#27403a'; ctx.lineWidth=1; ctx.fillStyle='#5f7a71'; ctx.font='12px sans-serif';
+    for(let g=0;g<=4;g++){
+      const gy=padT+(H-padT-padB)*g/4;
+      ctx.beginPath(); ctx.moveTo(padL,gy); ctx.lineTo(W-padR,gy); ctx.stroke();
+      ctx.fillText(fmtVal(yMax*(1-g/4)), 8, gy+4);
+    }
+    const yearStep=Math.max(1,Math.round((x1-x0)/6));
+    for(let yr=Math.ceil(x0); yr<=x1; yr+=yearStep){
+      ctx.fillText(String(Math.round(yr)), X(yr)-14, H-10);
+    }
+    /* curve, solid then dashed forecast */
+    function drawSeg(xa,xb,dashed){
+      if(xb<=xa) return;
+      ctx.beginPath();
+      ctx.setLineDash(dashed?[7,6]:[]);
+      ctx.strokeStyle=t.color; ctx.lineWidth=3.2;
+      ctx.shadowColor=t.color; ctx.shadowBlur=dashed?0:10;
+      const N=60;
+      for(let s=0;s<=N;s++){
+        const x=xa+(xb-xa)*s/N;
+        s===0?ctx.moveTo(X(x),Y(valAt(x))):ctx.lineTo(X(x),Y(valAt(x)));
+      }
+      ctx.stroke(); ctx.setLineDash([]); ctx.shadowBlur=0;
+    }
+    const fc=Math.min(t.forecastFrom,x1);
+    drawSeg(x0, Math.min(xCur,fc), false);
+    if(xCur>fc) drawSeg(fc, xCur, true);
+    /* glowing head dot + live value */
+    const yv=valAt(xCur);
+    ctx.beginPath(); ctx.fillStyle=t.color; ctx.shadowColor=t.color; ctx.shadowBlur=16;
+    ctx.arc(X(xCur),Y(yv),6,0,7); ctx.fill(); ctx.shadowBlur=0;
+    ctx.font='bold 15px sans-serif'; ctx.fillStyle=t.color;
+    const lbl=fmtVal(yv);
+    ctx.fillText(lbl, Math.min(X(xCur)+10, W-padR-40), Math.max(Y(yv)-10, 16));
+    /* forecast label */
+    if(t.forecastFrom<x1){
+      ctx.fillStyle='#5f7a71'; ctx.font='11px sans-serif';
+      ctx.fillText('previsione →', X(t.forecastFrom)+6, padT+12);
+    }
+    if(p<1) trendAnim=requestAnimationFrame(frame);
+  }
+  trendAnim=requestAnimationFrame(frame);
+}
+showTrend(0);
+
+/* ================= EXPO CHART ================= */
+const expoC=document.getElementById('expoCanvas');
+function drawExpo(){
+  const ctx=expoC.getContext('2d');
+  const W=expoC.width, H=expoC.height, pad=40;
+  const yr=+document.getElementById('expoYear').value;
+  const maxY=Math.pow(1.45,20); // exp max
+  const X=t=>pad+(W-2*pad)*t/20;
+  const Ylin=t=>H-pad-(H-2*pad)*(t*8)/maxY*4;       // linear scaled to be visible
+  const Yexp=t=>H-pad-(H-2*pad)*Math.pow(1.45,t)/maxY;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='#27403a'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(pad,H-pad); ctx.lineTo(W-pad,H-pad); ctx.moveTo(pad,H-pad); ctx.lineTo(pad,pad); ctx.stroke();
+  ctx.fillStyle='#5f7a71'; ctx.font='12px sans-serif';
+  ctx.fillText('anni →', W-pad-40, H-pad+18); ctx.fillText('capacità / adozione', pad-30, pad-12);
+  // linear
+  ctx.strokeStyle='#60a5fa'; ctx.lineWidth=2.5; ctx.beginPath();
+  for(let t=0;t<=20;t+=.2){const x=X(t),y=Math.max(pad,Ylin(t)); t===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+  ctx.stroke();
+  // exp
+  ctx.strokeStyle='#34d399'; ctx.lineWidth=2.5; ctx.beginPath();
+  for(let t=0;t<=20;t+=.2){const x=X(t),y=Math.max(pad,Yexp(t)); t===0?ctx.moveTo(x,y):ctx.lineTo(x,y);}
+  ctx.stroke();
+  // marker
+  ctx.strokeStyle='#fbbf24'; ctx.setLineDash([5,4]); ctx.beginPath();
+  ctx.moveTo(X(yr),H-pad); ctx.lineTo(X(yr),pad); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle='#60a5fa'; ctx.beginPath(); ctx.arc(X(yr),Math.max(pad,Ylin(yr)),5,0,7); ctx.fill();
+  ctx.fillStyle='#34d399'; ctx.beginPath(); ctx.arc(X(yr),Math.max(pad,Yexp(yr)),5,0,7); ctx.fill();
+  const lin=(yr*8*4).toFixed(0), exp=Math.pow(1.45,yr).toFixed(0);
+  document.getElementById('expoRead').innerHTML=`Anno ${yr}: <b class="lin">lineare = ${lin}</b> · <b class="exp">esponenziale = ${exp}</b> ${+exp>+lin?'← ha superato!':'(sembra indietro…)'}`;
+}
+document.getElementById('expoYear').oninput=drawExpo;
+
+/* ================= HYPE PHASES ================= */
+const HP=[
+  {n:1, name:'Innesco', txt:'<b>Nasce la tecnologia</b> — un prototipo, un paper, una demo. Pochi la conoscono, nessun prodotto reale. <i>Esempio: i primi esperimenti di registri distribuiti per i crediti.</i>'},
+  {n:2, name:'Picco delle aspettative', txt:'<b>Tutti ne parlano, pochi la capiscono.</b> Stampa, investimenti, promesse esagerate: "rivoluzionerà tutto". <i>Esempio: il boom 2021 dei crediti tokenizzati — miliardi mossi in pochi mesi.</i>'},
+  {n:3, name:'Disillusione', txt:'<b>La realtà presenta il conto.</b> I progetti pilota falliscono, la stampa si gira, gli investimenti fuggono. Molte tecnologie muoiono qui. <i>Esempio: il congelamento dei token da parte di Verra (2022) e il crollo della fiducia.</i>'},
+  {n:4, name:'Risalita', txt:'<b>Si impara a usarla davvero.</b> Lontano dai riflettori, emergono i casi d\'uso reali e le buone pratiche. <i>Esempio: i registri digitali "seri" che integrano dMRV e regole di certificazione.</i>'},
+  {n:5, name:'Produttività', txt:'<b>Diventa infrastruttura invisibile.</b> Nessuno ne parla più: la si usa e basta. <i>Esempio: il GPS — nessun agricoltore oggi lo definirebbe "tecnologia emergente".</i>'}
+];
+const hpRow=document.getElementById('hpRow');
+HP.forEach((p,i)=>{
+  const d=document.createElement('div'); d.className='hp'+(i===0?' active':'');
+  d.innerHTML=`<div class="n">${p.n}</div><h4>${p.name}</h4>`;
+  d.onclick=()=>{document.querySelectorAll('.hp').forEach(x=>x.classList.remove('active')); d.classList.add('active');
+    document.getElementById('hpPanel').innerHTML=p.txt;};
+  hpRow.appendChild(d);
+});
+document.getElementById('hpPanel').innerHTML=HP[0].txt;
+
+/* ================= HYPE CHIPS ================= */
+const CHIPS=[
+  {n:'GPS / GIS', c:'#34d399', x:88, y:40},
+  {n:'Agricoltura di precisione', c:'#2dd4bf', x:74, y:48},
+  {n:'IoT in campo', c:'#60a5fa', x:58, y:62},
+  {n:'AI / ML', c:'#a78bfa', x:30, y:22},
+  {n:'Blockchain (carbon)', c:'#fb7185', x:42, y:70},
+  {n:'Digital twin agricolo', c:'#fbbf24', x:24, y:18}
+];
+const hw=document.getElementById('hypeWrap');
+const startPos=[];
+CHIPS.forEach((ch,i)=>{
+  const d=document.createElement('div'); d.className='chip';
+  d.textContent=ch.n; d.style.borderColor=ch.c; d.style.color=ch.c;
+  const sx=8+(i%3)*14, sy=8+Math.floor(i/3)*10;
+  startPos.push([sx,sy]); d.style.left=sx+'%'; d.style.top=sy+'%';
+  hw.appendChild(d);
+  let drag=null;
+  d.addEventListener('pointerdown',e=>{d.classList.remove('moving');
+    drag={dx:e.clientX,dy:e.clientY,l:parseFloat(d.style.left),t:parseFloat(d.style.top)};
+    d.setPointerCapture(e.pointerId);});
+  d.addEventListener('pointermove',e=>{if(!drag)return;
+    const r=hw.getBoundingClientRect();
+    d.style.left=Math.min(97,Math.max(3,drag.l+(e.clientX-drag.dx)/r.width*100))+'%';
+    d.style.top=Math.min(95,Math.max(4,drag.t+(e.clientY-drag.dy)/r.height*100))+'%';});
+  d.addEventListener('pointerup',()=>drag=null);
+});
+document.getElementById('hypeReveal').onclick=()=>{
+  document.querySelectorAll('.chip').forEach((d,i)=>{d.classList.add('moving'); d.style.left=CHIPS[i].x+'%'; d.style.top=CHIPS[i].y+'%';});
+};
+document.getElementById('hypeReset').onclick=()=>{
+  document.querySelectorAll('.chip').forEach((d,i)=>{d.classList.add('moving'); d.style.left=startPos[i][0]+'%'; d.style.top=startPos[i][1]+'%';});
+};
+
+/* ================= MRV GUESS/REVEAL ================= */
+const sl=document.getElementById('mrvSlider');
+function setMrv(v){sl.value=v; renderMrv();}
+function renderMrv(){
+  const v=+sl.value;
+  document.getElementById('mrvPct').textContent=v+'%';
+  document.getElementById('segMrv').style.width=v+'%';
+  document.getElementById('segFarm').style.width=(100-v)+'%';
+  document.getElementById('segFarm').textContent=`All'agricoltore: ${100-v}`;
+  document.getElementById('segMrv').textContent=v>=14?`MRV: ${v}`:'';
+}
+sl.oninput=renderMrv; renderMrv();
+document.getElementById('mrvGuess').onclick=()=>{
+  const bar=document.getElementById('mrvBar');
+  let m=bar.querySelector('.guessmark');
+  if(!m){m=document.createElement('div'); m.className='guessmark'; bar.appendChild(m);}
+  m.style.left=sl.value+'%'; m.dataset.l='aula: '+sl.value+'%';
+};
+document.getElementById('mrvRevealBtn').onclick=()=>{
+  document.getElementById('mrvPresets').style.display='flex';
+  setMrv(45);
+};
+
+/* ================= CICLO + QUIZ ================= */
+const PHASES=[
+  {e:'📐', n:'Baseline e progetto', desc:'Prima di iniziare: com\'è il suolo oggi, e cosa succederebbe senza progetto? La baseline è il punto zero da cui si conteranno i crediti.', tech:[
+    ['GIS (cartografia digitale)','Mappa particelle, suoli e uso del suolo; ogni dato successivo si aggancia qui.','QGIS sulle particelle aziendali; mappe pedologiche regionali'],
+    ['Modelli di simulazione','Simulano la dinamica del carbonio nei decenni: quanto può sequestrare quel suolo con quelle pratiche?','RothC, DayCent usati dagli standard per la baseline'],
+    ['Archivi satellitari storici','Come veniva coltivato quel campo negli ultimi 10 anni? Lo dice l\'archivio gratuito delle immagini.','Serie storica Landsat/Sentinel su EO Browser']]},
+  {e:'🚜', n:'Pratiche in campo', desc:'Le pratiche vanno fatte E documentate: la registrazione digitale delle operazioni è ciò che le rende verificabili.', tech:[
+    ['Guida satellitare e rateo variabile','GPS RTK centimetrico: meno passaggi, input dosati dove servono; ogni operazione lascia traccia digitale.','Trattore con guida automatica che registra data, ora e percorso'],
+    ['Farm Management Software','Il quaderno di campagna digitale: semine, lavorazioni, cover crops registrate con timestamp e GPS.','App FMS in cui l\'agricoltore registra la semina della cover crop'],
+    ['Telemetria delle macchine','Le macchine stesse trasmettono cosa hanno fatto: lavorazione minima documentata dal CAN bus, non dall\'autodichiarazione.','ISOBUS/telemetria John Deere o CNH']]},
+  {e:'📡', n:'Monitoraggio', desc:'Il cuore del dMRV: osservare in continuo che le pratiche ci siano e che il carbonio cresca.', tech:[
+    ['Sensori IoT di suolo','Umidità, temperatura, CO₂, sonde NIR per il SOC: la verità di campo, ogni ora, via LoRaWAN.','Rete di sonde interrate che calibra il modello'],
+    ['Osservazione satellitare','Copertura totale ogni pochi giorni: verifica di cover crops e suolo nudo su ogni ettaro.','Sentinel-2 (gratis) + costellazioni commerciali'],
+    ['Droni / proximal sensing','Il dettaglio dove serve: biomassa della cover crop, zone problematiche.','Drone multispettrale su parcelle campione']]},
+  {e:'📊', n:'Reporting', desc:'Dal dato grezzo al report conforme allo standard: qui il digitale elimina mesi di lavoro manuale.', tech:[
+    ['Piattaforme dMRV','Ingestione automatica di sensori+satellite+FMS, calcoli secondo metodologia, report pronto per l\'ente.','Agreena, Soil Capital, eAgronom'],
+    ['AI per stima e gap-filling','Stima il SOC dove non si campiona e riempie i buchi nei dati, dichiarando l\'incertezza.','Modello ML calibrato su campioni georeferenziati'],
+    ['Quantificazione dell\'incertezza','Ogni stima esce con il suo ±%: è il numero che decide quanti crediti verranno emessi.','Report con incertezza ±15% → buffer 10%']]},
+  {e:'🔍', n:'Verifica', desc:'L\'ente terzo controlla: col dMRV non più a campione una volta l\'anno, ma in continuo su tutto il dataset.', tech:[
+    ['Audit remoto continuo','Il verificatore accede ai dati grezzi e ai log: controlla tutto, non un campione.','Dashboard di verifica con accesso al dato sensore'],
+    ['Audit trail / log immutabili','Ogni dato ha origine, timestamp e storia delle modifiche: impossibile ritoccare a posteriori.','Log firmati digitalmente; hash dei dataset'],
+    ['Standard digitali','Le metodologie richiedono formati machine-readable: la verifica diventa in parte automatica.','Verra VM0042; requisiti di quantificazione CRCF']]},
+  {e:'⛓️', n:'Emissione e scambio', desc:'Il credito nasce, viene venduto e infine "ritirato": il registro digitale è ciò che impedisce di venderlo due volte.', tech:[
+    ['Registri digitali dei crediti','Ogni credito ha un numero di serie, un proprietario e uno stato (attivo/ritirato), consultabili pubblicamente.','Registro Verra; registro CREA (L. 41/2023); futuro registro CRCF UE'],
+    ['Tokenizzazione / blockchain','Il credito diventa token: storia tracciabile da chiunque, retirement pubblico e definitivo.','Registri tokenizzati post-2023 con regole Verra'],
+    ['Smart contract','Pagamento automatico all\'agricoltore quando i dati verificati confermano le condizioni.','Contratto che libera il pagamento al closing della verifica']]}
+];
+const cr=document.getElementById('cycleRow');
+let quizMode=false;
+PHASES.forEach((p,i)=>{
+  const d=document.createElement('div'); d.className='phase'+(i===0?' active':'');
+  d.innerHTML=`<div class="emoji">${p.e}</div><h4>${p.n}</h4>`;
+  d.onclick=()=>{ if(quizMode){quizAnswer(i,d);} else {
+    document.querySelectorAll('.phase').forEach(x=>x.classList.remove('active')); d.classList.add('active'); showPhase(i);} };
+  cr.appendChild(d);
+});
+function showPhase(i){
+  const p=PHASES[i];
+  document.getElementById('phasePanel').innerHTML=
+    `<h3>${p.e} ${p.n}</h3><p class="pdesc">${p.desc}</p>`+
+    p.tech.map(t=>`<div class="techitem"><h5>${t[0]}</h5><p>${t[1]}<br><span class="ex">Esempio: ${t[2]}</span></p></div>`).join('');
+}
+showPhase(0);
+/* quiz */
+const QUIZ=[
+  ['Sonde NIR interrate che stimano il carbonio organico',2],
+  ['RothC: modello che simula 30 anni di dinamica del carbonio',0],
+  ['Smart contract che paga l\'agricoltore a verifica conclusa',5],
+  ['Quaderno di campagna digitale con timestamp GPS',1],
+  ['Log immutabili che il certificatore ispeziona da remoto',4],
+  ['AI che stima il SOC negli ettari non campionati',3],
+  ['Serie storica Landsat per ricostruire le pratiche passate',0],
+  ['Registro pubblico dove il credito viene "ritirato" per sempre',5]
+];
+let qIdx=0, qScore=0;
+function renderQuiz(){
+  if(qIdx>=QUIZ.length){
+    document.getElementById('quizQ').innerHTML=`🎉 Finito! Punteggio aula: <b>${qScore}/${QUIZ.length}</b>`;
+    document.getElementById('quizScore').textContent='';
+    return;
+  }
+  document.getElementById('quizQ').innerHTML=`A quale fase appartiene: <b>«${QUIZ[qIdx][0]}»</b>?`;
+  document.getElementById('quizScore').textContent=`Domanda ${qIdx+1}/${QUIZ.length} · Punteggio: ${qScore}`;
+}
+function quizAnswer(i,el){
+  if(qIdx>=QUIZ.length) return;
+  if(i===QUIZ[qIdx][1]){el.classList.add('correct'); qScore++; qIdx++;
+    setTimeout(()=>{el.classList.remove('correct'); renderQuiz();},700);}
+  else {el.classList.add('wrong'); setTimeout(()=>el.classList.remove('wrong'),500);}
+}
+document.getElementById('modeExplore').onclick=function(){quizMode=false;
+  this.className='btn small'; document.getElementById('modeQuiz').className='btn ghost small';
+  document.getElementById('quizBox').style.display='none'; document.getElementById('phasePanel').style.display='block';};
+document.getElementById('modeQuiz').onclick=function(){quizMode=true; qIdx=0; qScore=0;
+  this.className='btn small'; document.getElementById('modeExplore').className='btn ghost small';
+  document.getElementById('quizBox').style.display='block'; document.getElementById('phasePanel').style.display='none';
+  document.querySelectorAll('.phase').forEach(x=>x.classList.remove('active'));
+  renderQuiz();};
+
+/* ================= TABS ================= */
+document.querySelectorAll('.tabs').forEach(group=>{
+  group.querySelectorAll('.tab').forEach(tab=>{
+    tab.onclick=()=>{
+      group.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      const panes=group.nextElementSibling;
+      panes.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+      panes.querySelector('#'+tab.dataset.pane).classList.add('active');
+    };
+  });
+});
+
+/* ================= IOT ORDER GAME ================= */
+const IOT_STEPS=['🌱 Sensore nel suolo (misura)','📶 Nodo LoRaWAN (trasmette)','📡 Gateway in azienda (raccoglie)','☁️ Cloud / piattaforma (archivia)','🧠 Modello AI (stima il SOC)','📊 Report per il verificatore'];
+let iotPlaced=0;
+function iotInit(){
+  iotPlaced=0;
+  document.getElementById('iotSeq').innerHTML='';
+  document.getElementById('iotMsg').textContent='';
+  const pool=document.getElementById('iotPool'); pool.innerHTML='';
+  const shuffled=IOT_STEPS.map((s,i)=>[s,i]).sort(()=>Math.random()-.5);
+  shuffled.forEach(([s,i])=>{
+    const c=document.createElement('div'); c.className='step-chip'; c.textContent=s;
+    c.onclick=()=>{
+      if(i===iotPlaced){
+        const p=document.createElement('div'); p.className='step-chip placed'; p.textContent=(iotPlaced+1)+'. '+s;
+        document.getElementById('iotSeq').appendChild(p);
+        c.remove(); iotPlaced++;
+        if(iotPlaced===IOT_STEPS.length) document.getElementById('iotMsg').textContent='✅ Catena completa! Dal suolo al verificatore senza passaggi manuali.';
+      } else {c.classList.add('err'); setTimeout(()=>c.classList.remove('err'),400);}
+    };
+    pool.appendChild(c);
+  });
+}
+document.getElementById('iotRestart').onclick=iotInit;
+iotInit();
+
+/* ================= AI UNCERTAINTY ================= */
+const unc=document.getElementById('uncSlider');
+function renderUnc(){
+  const u=+unc.value;
+  const buf=Math.round(u*0.7);
+  const cred=Math.round(200*(1-buf/100));
+  document.getElementById('uncVal').textContent='±'+u+'%';
+  document.getElementById('uncBuf').textContent=buf+'%';
+  document.getElementById('uncCred').textContent=cred;
+  document.getElementById('uncRev').textContent=(cred*40).toLocaleString('it-IT')+' €';
+}
+unc.oninput=renderUnc; renderUnc();
+
+/* ================= BLOCKCHAIN DEMO ================= */
+const BC_INIT=['Credito #001 — 1 tCO₂e — Az. Valdichiara — 2026','Credito #002 — 1 tCO₂e — Az. Valdichiara — 2026','Retirement #001 — ritirato da Buongusto S.p.A.'];
+function bHash(s){let h=5381; for(let i=0;i<s.length;i++){h=((h<<5)+h+s.charCodeAt(i))|0;} return ('0000000'+(h>>>0).toString(16)).slice(-8);}
+let sealed=[];
+const bcWrap=document.getElementById('bcChain');
+function bcBuild(){
+  bcWrap.innerHTML='';
+  BC_INIT.forEach((txt,i)=>{
+    const b=document.createElement('div'); b.className='block'; b.dataset.i=i;
+    b.innerHTML=`<h5>Blocco ${i+1} <span class="st">🔒</span></h5>
+      <div class="prev">prev: <span class="pv"></span></div>
+      <textarea>${txt}</textarea>
+      <div class="hash">hash: <span class="hv"></span></div>`;
+    b.querySelector('textarea').addEventListener('input',bcCheck);
+    bcWrap.appendChild(b);
+  });
+  bcSeal();
+}
+function bcSeal(){
+  let prev='GENESIS'; sealed=[];
+  document.querySelectorAll('#bcChain .block').forEach(b=>{
+    const data=b.querySelector('textarea').value;
+    const h=bHash(data+prev);
+    sealed.push(h);
+    b.querySelector('.pv').textContent=prev;
+    b.querySelector('.hv').textContent=h;
+    prev=h;
+  });
+  bcCheck();
+}
+function bcCheck(){
+  let prev='GENESIS', broken=false;
+  document.querySelectorAll('#bcChain .block').forEach((b,i)=>{
+    const data=b.querySelector('textarea').value;
+    const h=bHash(data+prev);
+    if(h!==sealed[i]) broken=true;
+    b.classList.toggle('invalid',broken);
+    b.querySelector('.st').textContent=broken?'⚠️':'🔒';
+    prev=sealed[i];
+  });
+}
+document.getElementById('bcSeal').onclick=bcSeal;
+bcBuild();
+
+/* ================= CHAIN ANIMATION ================= */
+const CHAIN=[
+  {e:'🌱', n:'Campo', s:'Cover crops e minima lavorazione', cap:'<b>1. Il campo.</b> L\'agricoltore adotta cover crops e minima lavorazione: la fotosintesi pompa carbonio nel suolo. Qui — e solo qui — avviene il sequestro.'},
+  {e:'📡', n:'Sensore', s:'IoT: la verità di campo', cap:'<b>2. Il sensore misura.</b> Sonde di suolo e stazioni connesse via LoRaWAN registrano in continuo umidità, temperatura, pratiche. Nasce il dato grezzo, georeferenziato e datato.'},
+  {e:'🛰️', n:'Satellite', s:'Copertura totale', cap:'<b>3. Il satellite copre.</b> Sentinel-2 fotografa ogni 5 giorni: le pratiche sono verificate su tutta la superficie. Satellite e sensore si calibrano a vicenda.'},
+  {e:'🧠', n:'AI', s:'La stima e l\'incertezza', cap:'<b>4. L\'AI stima.</b> Il modello combina sensori, satellite, meteo e campionamenti: stima il carbonio su ogni ettaro <b>e dichiara la propria incertezza</b> (±15%).'},
+  {e:'🔍', n:'Verifica', s:'Buffer e certificazione', cap:'<b>5. Il verificatore decide.</b> Sulla base dell\'incertezza applica un buffer: su 200 t stimate ne certifica 180. La sua firma trasforma una stima in un credito.'},
+  {e:'⛓️', n:'Registro', s:'Token unico, storia tracciabile', cap:'<b>6. La blockchain certifica.</b> Ogni credito diventa un token unico: chiunque può verificarne origine, storia e stato. Lo smart contract paga l\'agricoltore.'},
+  {e:'🏢', n:'Buyer', s:'Retirement pubblico', cap:'<b>7. Il ritiro.</b> L\'azienda compra il credito e lo ritira pubblicamente: mai più vendibile o conteggiabile due volte. Il cerchio si chiude — e il valore torna al campo.'}
+];
+const cs=document.getElementById('chainStage');
+CHAIN.forEach((c,i)=>{
+  if(i>0){const a=document.createElement('div'); a.className='clink'; a.textContent='→'; cs.appendChild(a);}
+  const d=document.createElement('div'); d.className='cnode';
+  d.innerHTML=`<div class="bub">${c.e}</div><h4>${c.n}</h4><p>${c.s}</p>`;
+  cs.appendChild(d);
+});
+let chainStep=-1;
+document.getElementById('chainNext').onclick=()=>{
+  if(chainStep>=CHAIN.length-1) return;
+  chainStep++;
+  const nodes=cs.querySelectorAll('.cnode'), links=cs.querySelectorAll('.clink');
+  nodes[chainStep].classList.add('lit');
+  if(chainStep>0) links[chainStep-1].classList.add('lit');
+  document.getElementById('chainCaption').innerHTML=CHAIN[chainStep].cap;
+  if(chainStep===CHAIN.length-1) document.getElementById('chainNext').textContent='✓ Viaggio completato';
+};
+document.getElementById('chainReset').onclick=()=>{
+  chainStep=-1;
+  cs.querySelectorAll('.lit').forEach(x=>x.classList.remove('lit'));
+  document.getElementById('chainCaption').innerHTML='Premi <b>Avanti</b> per iniziare il viaggio.';
+  document.getElementById('chainNext').textContent='Avanti →';
+};
+
+/* ================= SIM TIMER (60' a round) ================= */
+const SIM_PHASES=[
+  [10*60,'📖 Lettura schede e strategia di gruppo (10\')'],
+  [10*60,'🛰️ ROUND 1 — Quanta tecnologia di misura? Stack A o B, e chi paga (10\')'],
+  [10*60,'🔐 ROUND 2 — Di chi sono i dati? D1 piattaforma chiusa o D2 portabili (10\')'],
+  [10*60,'⛓️ ROUND 3 — Quale registro? R1 tradizionale o R2 blockchain + smart contract (10\')'],
+  [15*60,'💶 ROUND 4 — Prezzo, chi paga cosa, compilazione del contratto (15\')'],
+  [5*60,'✍️ FIRMA — conti finali e firme di tutti i gruppi (5\')']
+];
+const SIM_TOTAL=SIM_PHASES.reduce((a,p)=>a+p[0],0);
+let simLeft=SIM_TOTAL, simInt=null;
+function simPhaseIdx(){
+  let el=SIM_TOTAL-simLeft, acc=0;
+  for(let i=0;i<SIM_PHASES.length;i++){acc+=SIM_PHASES[i][0]; if(el<acc) return i;}
+  return SIM_PHASES.length-1;
+}
+function simRender(){
+  const el=document.getElementById('simTime');
+  el.textContent=String(Math.floor(simLeft/60)).padStart(2,'0')+':'+String(simLeft%60).padStart(2,'0');
+  el.classList.toggle('warning', simLeft<=10*60 && simLeft>2*60);
+  el.classList.toggle('danger', simLeft<=2*60);
+  const ph=document.getElementById('simPhase');
+  ph.textContent = simLeft>0 ? SIM_PHASES[simPhaseIdx()][1] : '⏰ Tempo scaduto — si va al debrief!';
+}
+document.getElementById('simStart').onclick=()=>{
+  if(simInt) return;
+  simInt=setInterval(()=>{if(simLeft>0){simLeft--; simRender();} else {clearInterval(simInt); simInt=null;}},1000);
+};
+document.getElementById('simPause').onclick=()=>{clearInterval(simInt); simInt=null;};
+document.getElementById('simNext').onclick=()=>{
+  const i=simPhaseIdx();
+  let acc=0; for(let k=0;k<=i;k++) acc+=SIM_PHASES[k][0];
+  simLeft=SIM_TOTAL-acc; simRender();
+};
+document.getElementById('simReset').onclick=()=>{clearInterval(simInt); simInt=null; simLeft=SIM_TOTAL; simRender();};
+simRender();
+
+/* ================= COACH — copione del docente ================= */
+const SCRIPTS={
+  s0:[['Apri così','«Oggi niente slide: una lezione-laboratorio. Tenete il telefono a portata: si vota davvero.»'],
+      ['Anticipa il filo','<b>Il sensore misura → l\'AI stima → la blockchain certifica e paga.</b> Promesso: in chiusura questa frase avrà senso.']],
+  s1:[['1 · Commenta la nuvola (1\')','Cosa è emerso di più? E cosa <b>manca</b>? Quasi mai scrivono "satellite" o "AI" — eppure il GPS li ha portati qui. <b>Il digitale migliore è quello che non si nota più.</b>'],
+      ['2 · Accendi le caselle (30")','Sono il "verbale" della discussione, non un secondo sondaggio.'],
+      ['3 · Lancia il ponte (30")','Prendi 2-3 tecnologie emerse e <b>datale</b>: «Il GPS? Aperto ai civili nel 2000. Ogni tecnologia ha una storia — e ogni storia è il crollo di un costo. Vediamole.» → Avanti.']],
+  s2:[['Aggancio','«Il GPS che vi ha portato qui ha una data di nascita: 2000. Riavvolgiamo il nastro.»'],
+      ['Timeline','Clicca le ondate in ordine; su ognuna chiedi PRIMA all\'aula: <b>quale costo è crollato?</b>'],
+      ['Video','2-3 minuti scelti, non interi. Olivetti = orgoglio nazionale, funziona sempre.'],
+      ['Ponte','«Queste ormai sono invisibili. Ma AI e blockchain fanno ancora rumore: come si chiamano le tecnologie che fanno rumore?» → Avanti.']],
+  s3:[['Quiz Menti','Lancia il sondaggio: quali tra queste sono "emergenti"? Lascia litigare un minuto: il disaccordo È la lezione.'],
+      ['Le 5 carte','Chiedi di indovinare gli attributi prima di aprirle. La n.5 (incertezza) è quella decisiva.'],
+      ['Grafico','Muovi lo slider anno per anno: «all\'inizio l\'esponenziale <b>delude</b>... poi esplode». È il motivo per cui le sottovalutiamo due volte.'],
+      ['Ponte','«Queste montagne russe di aspettative hanno una mappa: lo Hype Cycle.»']],
+  s4:[['Racconto','Le 5 fasi come una storia: colpo di fulmine, luna di miele, crisi, maturità. Cita il caso crediti tokenizzati 2021-2023: picco → crollo → risalita seria.'],
+      ['Esercizio','Chiedi all\'aula dove mettere ogni etichetta PRIMA di trascinarla. Poi rivela il suggerito e <b>accetta il dissenso</b>: il posizionamento giusto non esiste.'],
+      ['Ponte','«Ora seguiamo queste tecnologie nel mondo reale: i trend.»']],
+  s5:[['Ritmo','Una card per volta, chiedi un esempio dal loro quotidiano per ciascuna.'],
+      ['Ponte','«E tutto questo digitale serve anche a misurare il pianeta...»']],
+  s6:[['Filo rosso','La sostenibilità va <b>misurata</b>, non dichiarata. CSRD ed EUDR: la misura diventa legge.'],
+      ['Chiusura','Greenwashing: «la risposta non è comunicare meglio, è <b>provare meglio</b>». E in agricoltura? → Avanti.']],
+  s7:[['Sosta strategica','Soffermati su piattaforme e registri: li ritroveranno identici nella simulazione.'],
+      ['Video','Quello sul carbon farming solo se l\'aula non ha basi; altrimenti salta al dMRV.'],
+      ['Ponte','«Tutti questi trend convergono su tre lettere. Chi sa cosa significa MRV?»']],
+  s8:[['Le lettere','Raccogli le ipotesi PRIMA di aprire M, R, V. La V è quella che crea il valore: la firma che trasforma stima in credito.'],
+      ['Dettatura','Il riquadro verde in basso è LA definizione del corso: falla scrivere.'],
+      ['Ponte','«E perché digitalizzarlo? Perché l\'MRV costa. Quanto, secondo voi?» → Avanti col mistero.']],
+  s9:[['Indovinello','Raccogli le ipotesi (alzata di mano), muovi lo slider sulla media e <b>fissa la tacca</b>.'],
+      ['Rivelazione','Le fasce reali a confronto con l\'ipotesi dell\'aula: il gap fa il lavoro per te.'],
+      ['Ponte','«Vediamo DOVE il digitale taglia questi costi: il giro completo di un credito.»']],
+  s10:[['Esplora','2-3 fasi a scelta, non tutte: le altre le scoprono col quiz.'],
+      ['Quiz','8 abbinamenti, l\'aula vota a voce, tu clicchi. Punteggio finale = applauso o sfottò.'],
+      ['Pausa','Se serve, la pausa va qui. Al rientro: «tre tecnologie meritano il primo piano».']],
+  s11:[['Tab in ordine','Come funziona → cosa fa → limiti. Al gioco della catena: <b>uno studente alla tastiera</b>, l\'aula suggerisce.'],
+      ['Take-away','«Il fattore limitante non è lo spazio: è il suolo. E il suolo si misura a terra.»'],
+      ['Ponte','«Il sensore produce dati grezzi. Chi li trasforma in stime? E quanto ci si può fidare?»']],
+  s12:[['Gioco','Slider dell\'incertezza a uno studente: ogni punto in meno è denaro. Fagli trovare il break-even dei sensori.'],
+      ['Limiti','Garbage in, garbage out. Stai seminando il problema dell\'oracolo senza nominarlo.'],
+      ['Ponte','«Stima fatta, crediti emessi. Ma chi ci garantisce che nessuno li venda due volte?»']],
+  s13:[['Il momento clou','Demo manomissione: studente alla tastiera, modifica il blocco 1, la catena si rompe in diretta. Silenzio garantito.'],
+      ['Onestà','«La blockchain non crea fiducia: la <b>trasporta</b>. Se entra spazzatura, resta spazzatura — immutabile.» (Ora puoi dirlo: problema dell\'oracolo.)'],
+      ['Ponte','«Ricomponiamo l\'intera catena, dall\'inizio alla fine.»']],
+  s14:[['Ritmo lento','Avanza passo passo, lascia leggere. Domanda: «dove può rompersi questa catena?» (risposta giusta: al primo anello).'],
+      ['Ponte','«Adesso la catena la costruite voi. Simulazione: 4 gruppi, 4 decisioni, 60 minuti.»']],
+  s15:[['Setup','Spiega i 4 round DA QUESTA schermata, poi consegna le schede e avvia il timer. Le fasi cambiano da sole.'],
+      ['Durante','Gira tra i tavoli, non risolvere: semina domande. «Di chi sono i dati?» al Round 2 sblocca tutto.'],
+      ['Round 3','Aspetta la domanda dell\'oracolo dal verificatore (è nella sua scheda). Se non arriva, lanciala tu.']],
+  s16:[['Giro di tavoli','Un minuto a gruppo: la decisione più difficile e perché.'],
+      ['Chiusura','La frase da lavagna: <b>il sensore misura, l\'AI stima, la blockchain certifica e paga — ma è il suolo che sequestra.</b>']]
+};
+const coachPanel=document.createElement('div'); coachPanel.id='coach'; document.body.appendChild(coachPanel);
+let coachOn=false;
+function renderCoach(){
+  const items=SCRIPTS[SCREENS[cur].id]||[];
+  coachPanel.innerHTML='<p class="chead">💬 Copione — '+SCREENS[cur].label+'</p>'+
+    items.map((b,i)=>`<div class="bub2" style="animation-delay:${i*0.35}s"><span class="who">${b[0]}</span>${b[1]}</div>`).join('');
+}
+const coachBtn=document.getElementById('coachBtn');
+function toggleCoach(force){
+  coachOn=force!==undefined?force:!coachOn;
+  coachPanel.classList.toggle('show',coachOn);
+  coachBtn.classList.toggle('on',coachOn);
+  if(coachOn) renderCoach();
+}
+coachBtn.onclick=()=>toggleCoach();
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+  if(e.key==='c'||e.key==='C') toggleCoach();
+});
+const baseGo=go;
+go=function(i){baseGo(i); if(coachOn) renderCoach();};
+
+go(0);
+</script>
+</body>
+</html>
