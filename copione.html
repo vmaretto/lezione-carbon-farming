@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Copione docente — Tecnologie digitali per il Carbon Farming</title>
+<style>
+  :root{
+    --bg:#0d1614; --card:#182723; --card2:#1e312c; --ink:#e8f0ed; --ink-dim:#9db4ac;
+    --ink-faint:#5f7a71; --green:#34d399; --teal:#2dd4bf; --amber:#fbbf24; --border:#27403a;
+  }
+  *{box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:var(--bg); color:var(--ink); display:flex; flex-direction:column; overflow:hidden;}
+  header{padding:14px 18px 10px; border-bottom:1px solid var(--border); display:flex; align-items:baseline; gap:12px;}
+  header h1{font-size:1rem; color:var(--green);}
+  header .clock{margin-left:auto; font-variant-numeric:tabular-nums; font-size:1.1rem; color:var(--amber); font-weight:700;}
+  #main{flex:1; overflow-y:auto; padding:18px; -webkit-overflow-scrolling:touch;}
+  .kick{font-size:.8rem; text-transform:uppercase; letter-spacing:.14em; color:var(--teal); margin-bottom:4px;}
+  h2{font-size:1.7rem; margin-bottom:4px; line-height:1.2;}
+  .time-badge{display:inline-block; background:var(--card2); color:var(--amber); font-weight:800; padding:3px 12px; border-radius:20px; font-size:1rem; margin:6px 0 14px;}
+  .scena{background:var(--card); border:1px dashed var(--border); border-radius:12px; padding:12px 16px; font-size:1rem; color:var(--ink-dim); margin-bottom:16px; line-height:1.5;}
+  .scena b{color:var(--ink);}
+  .bub{background:linear-gradient(160deg,var(--card2),var(--card)); border:1px solid var(--green); border-radius:18px 18px 18px 4px; padding:16px 18px; margin-bottom:14px; font-size:1.15rem; line-height:1.6;}
+  .bub .who{display:block; font-size:.74rem; text-transform:uppercase; letter-spacing:.12em; color:var(--teal); margin-bottom:6px;}
+  .bub b{color:var(--green);}
+  .bub i{color:var(--ink-dim);}
+  footer{display:flex; gap:10px; padding:12px 16px calc(12px + env(safe-area-inset-bottom)); border-top:1px solid var(--border); align-items:center;}
+  button{font-family:inherit; border:none; border-radius:14px; font-size:1.15rem; font-weight:700; padding:16px 10px; cursor:pointer;}
+  #prev{flex:1; background:var(--card); color:var(--ink-dim); border:1px solid var(--border);}
+  #next{flex:2; background:linear-gradient(90deg,#10b981,var(--teal)); color:#06281e;}
+  #where{font-size:.85rem; color:var(--ink-faint); min-width:64px; text-align:center;}
+  #bar{height:4px; background:var(--card);}
+  #bar div{height:100%; background:linear-gradient(90deg,var(--green),var(--teal)); width:0%; transition:width .3s;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎤 Copione docente</h1>
+  <span style="font-size:.75rem; color:var(--ink-faint);">tieni il proiettore sulla stessa schermata</span>
+  <span class="clock" id="clock">00:00</span>
+</header>
+<div id="bar"><div id="barfill"></div></div>
+<div id="main"></div>
+<footer>
+  <button id="prev">←</button>
+  <span id="where"></span>
+  <button id="next">Avanti →</button>
+</footer>
+
+<script>
+const S=[
+ {k:'Titolo', t:'', scena:'Sul proiettore: schermata del titolo con la catena sensore → AI → blockchain.',
+  b:[['Apri così','«Oggi niente slide: una lezione-laboratorio. Tenete il telefono a portata: si vota davvero.»'],
+     ['Anticipa il filo','<b>Il sensore misura → l\'AI stima → la blockchain certifica e paga.</b> «Vi prometto che in chiusura questa frase avrà perfettamente senso.»']]},
+ {k:'Parte 1 · Apertura', t:"5'", scena:'Sul proiettore: QR + codice <b>7217 7016</b>, riquadro Mentimeter live, caselle da accendere.',
+  b:[['Lancio','«Inquadrate il QR: quante tecnologie digitali avete usato per arrivare qui stamattina? Scrivetele.» Lascia crescere la nuvola in silenzio: l\'attesa fa metà del lavoro.'],
+     ['1 · Commenta la nuvola (1\')','Cosa è emerso di più? E cosa <b>manca</b>? Quasi mai scrivono "satellite" o "AI" — eppure il GPS li ha portati in aula. <b>Il digitale migliore è quello che non si nota più.</b>'],
+     ['2 · Accendi le caselle (30")','Accendi le caselle citate: ogni click fa apparire un fatto-sorpresa. Leggine 2-3 ad alta voce (NASA 1969, i 31 satelliti GPS...).'],
+     ['3 · Ponte (30")','«Il GPS? Aperto ai civili nel 2000. Il pagamento col telefono? 15 anni fa fantascienza. Ogni tecnologia ha una storia — e ogni storia è il crollo di un costo. Riavvolgiamo il nastro.» → Avanti.']]},
+ {k:'Parte 1 · Storia', t:"8'", scena:'Sul proiettore: timeline delle 5 ondate cliccabili + video.',
+  b:[['Metodo','Clicca le ondate in ordine. Su ognuna chiedi PRIMA all\'aula: <b>«quale costo è crollato qui?»</b> Poi apri il pannello e conferma.'],
+     ['Aggancio italiano','Sull\'ondata PC: la Olivetti Programma 101, usata dalla NASA per l\'Apollo 11. Orgoglio nazionale: funziona sempre.'],
+     ['Video','Mostra 2-3 minuti scelti, non tutto. Se l\'hai mandato come pre-lezione, solo un richiamo di 1 minuto.'],
+     ['Ponte','«Queste tecnologie ormai sono invisibili. Ma AI e blockchain fanno ancora rumore: come si chiamano le tecnologie che fanno rumore?»']]},
+ {k:'Parte 1 · Tecnologia emergente', t:"7'", scena:'Sul proiettore: QR quiz Menti (codice <b>4595 7847</b>), le 5 carte di Rotolo, il grafico esponenziale vs lineare.',
+  b:[['Quiz Menti','«Quali di queste sono tecnologie emergenti? Massimo 3 risposte.» Lascia litigare un minuto: <b>il disaccordo È la lezione</b>.'],
+     ['Risultati','GPS e GIS prenderanno voti: perfetto. «Il GPS è emergente? No: è maturo, invisibile, infrastruttura. Allora cosa rende emergente una tecnologia?»'],
+     ['Le 5 carte','Falle indovinare prima di aprirle. La n.5 — l\'incertezza — è quella decisiva: «emergente = scommessa, non certezza».'],
+     ['Grafico','Muovi lo slider anno per anno: «all\'inizio l\'esponenziale <b>delude</b>… poi esplode. Per questo le sottovalutiamo due volte.»'],
+     ['Ponte','«Queste montagne russe di aspettative hanno una mappa ufficiale: lo Hype Cycle.»']]},
+ {k:'Parte 1 · Hype Cycle', t:"5'", scena:'Sul proiettore: le 5 fasi cliccabili + curva con etichette trascinabili.',
+  b:[['Racconto','Le 5 fasi come una storia d\'amore: colpo di fulmine, luna di miele, crisi, maturità. Caso concreto: i crediti tokenizzati — boom 2021, congelamento Verra 2022, risalita seria oggi.'],
+     ['Esercizio','Per ogni etichetta chiedi all\'aula dove va, POI trascinala. Alla fine «Mostra il posizionamento suggerito» e <b>accetta il dissenso</b>: il posizionamento giusto non esiste.'],
+     ['Ponte','«Ora lasciamo la teoria: vediamo questi trend nel mondo reale, coi numeri.»']]},
+ {k:'Parte 2 · Trend generali', t:"6'", scena:'Sul proiettore: 5 chip cliccabili, curva animata + contatori per ciascuna.',
+  b:[['Ritmo','Un trend per volta: lascia che l\'animazione finisca prima di parlare (8 secondi di silenzio strategico).'],
+     ['Da sottolineare','AI: 100 mln di utenti in 2 mesi — adozione più rapida della storia. IoT: 18 mld di dispositivi, più del doppio dell\'umanità. Satelliti: ×10 in dieci anni.'],
+     ['Ponte','«Cinque curve, una sola forma: l\'esponenziale di prima. E tutto questo serve anche a misurare il pianeta…»']]},
+ {k:'Parte 2 · Digitale × sostenibilità', t:"6'", scena:'Sul proiettore: 5 temi con gauge radiale + barre di confronto.',
+  b:[['Filo rosso','La sostenibilità va <b>misurata</b>, non dichiarata. Ogni tema lo dimostra con un numero.'],
+     ['Da sottolineare','CSRD: da 11.700 a ~50.000 aziende obbligate (di\' che la platea è in revisione con l\'Omnibus). Copernicus: 16 TB al giorno, gratis. Greenwashing: 53% dei claim vaghi o ingannevoli.'],
+     ['Ponte','«La risposta al greenwashing non è comunicare meglio: è <b>provare meglio</b>. E in agricoltura?»']]},
+ {k:'Parte 2 · Digitale × carbon farming', t:"6'", scena:'Sul proiettore: 6 card sui trend del settore + video evoluzione (se caricato).',
+  b:[['Sosta strategica','Soffermati su <b>piattaforme</b> e <b>registri</b>: li ritroveranno identici nella simulazione del pomeriggio.'],
+     ['Italia','Registro CREA dei crediti agroforestali (L. 41/2023) + CRCF europeo: l\'infrastruttura sta diventando istituzionale.'],
+     ['Ponte','«Tutti questi trend convergono su tre lettere. Chi sa cosa significa MRV?» (Lascia 10 secondi di silenzio: qualcuno lo sa.)']]},
+ {k:'Parte 2 · Cos\'è MRV/dMRV', t:"6'", scena:'Sul proiettore: le tre lettere M-R-V cliccabili + tabella MRV vs dMRV.',
+  b:[['Le lettere','Raccogli le ipotesi PRIMA di aprire M, R, V. Sulla V fermati: <b>«è la firma che trasforma una stima in denaro»</b>.'],
+     ['Dettatura','Il riquadro verde è LA definizione del corso — falla scrivere: «il dMRV rende misura, rendicontazione e verifica continue, remote, automatizzate e verificabili da terzi».'],
+     ['Ponte','«E perché tanto sforzo per digitalizzarlo? Perché l\'MRV costa. Quanto? Provate a indovinare.» → Avanti col mistero.']]},
+ {k:'Parte 2 · Collo di bottiglia', t:"5'", scena:'Sul proiettore: barra credito 100 con slider + tacca ipotesi aula + fasce reali nascoste.',
+  b:[['Indovinello','«Su 100 € di credito, quanti se li mangia l\'MRV tradizionale?» Alzata di mano: 10? 20? 40? Metti lo slider sulla media e <b>fissa la tacca gialla</b>.'],
+     ['Rivelazione','Premi "Rivela": 30-50% tradizionale, 10-20% dMRV. Il confronto con la loro ipotesi fa il lavoro per te.'],
+     ['Chiusura','«Se la misura si mangia metà del valore, i piccoli non partono. Il dMRV non è un vezzo: è la differenza tra un mercato che funziona e uno che non decolla.»']]},
+ {k:'Parte 2 · Ciclo del credito', t:"6'", scena:'Sul proiettore: 6 fasi del ciclo + modalità Esplora/Quiz.',
+  b:[['Esplora','Apri solo 2-3 fasi (baseline, monitoraggio, emissione): le altre le scoprono col quiz.'],
+     ['Quiz','8 abbinamenti: leggi la tecnologia, l\'aula vota la fase a voce, tu clicchi. Punteggio finale = applauso o sfottò.'],
+     ['Pausa','Se serve una pausa, è QUI il momento. Al rientro: «tre tecnologie meritano il primo piano».']]},
+ {k:'Parte 3 · Focus IoT', t:"15'", scena:'Sul proiettore: tab Come funziona / Cosa fa / Limiti / Infografica / Gioco.',
+  b:[['Ordine','Come funziona → cosa fa → limiti → infografica come riepilogo visivo.'],
+     ['Gioco','«Costruisci la catena»: <b>uno studente alla tastiera</b>, l\'aula suggerisce l\'ordine. Gli errori (rosso) valgono più dei successi.'],
+     ['Take-away','«Il fattore limitante non è lo spazio: è il suolo. E il suolo si misura a terra.»'],
+     ['Ponte','«Il sensore produce dati grezzi. Ma chi li trasforma in stime? E quanto fidarsi?»']]},
+ {k:'Parte 3 · Focus AI', t:"15'", scena:'Sul proiettore: tab + infografica "fabbrica della stima" + gioco dell\'incertezza.',
+  b:[['Gioco','Slider dell\'incertezza a uno studente: «trova quanti crediti perdiamo passando da ±15% a ±35%». Ogni punto di incertezza è denaro.'],
+     ['Numeri ponte','±35% → 150 crediti; ±15% → 180. <b>Memorizzali: sono gli stessi numeri della simulazione.</b>'],
+     ['Limiti','Garbage in, garbage out. Stai seminando il problema dell\'oracolo senza ancora nominarlo.'],
+     ['Ponte','«Stima fatta, crediti emessi. Ma chi ci garantisce che nessuno li venda due volte?»']]},
+ {k:'Parte 3 · Focus Blockchain', t:"15'", scena:'Sul proiettore: tab + il tuo video + demo di manomissione della catena.',
+  b:[['Il momento clou','Demo manomissione: <b>studente alla tastiera</b>, modifica il blocco 1 → la catena diventa rossa in diretta. Lascia il silenzio lavorare.'],
+     ['Onestà','«La blockchain non crea fiducia: la <b>trasporta</b>. Se entra spazzatura, resta spazzatura — immutabile.» Ora puoi dirlo: problema dell\'oracolo.'],
+     ['Ponte','«Abbiamo tutti i pezzi. Ricomponiamo l\'intera catena, dall\'inizio alla fine.»']]},
+ {k:'Parte 4 · Il viaggio di un credito', t:"5'", scena:'Sul proiettore: animazione a 7 tappe, avanza con "Avanti".',
+  b:[['Ritmo lento','Una tappa per volta, lascia leggere. È il riassunto dell\'intera lezione in 7 click.'],
+     ['Domanda','«Dove può rompersi questa catena?» (Risposta giusta: al primo anello — il dato. Tutto il resto lo trasporta soltanto.)'],
+     ['Ponte','«Adesso la catena la costruite voi: 4 gruppi, 4 decisioni, 60 minuti. Simulazione.»']]},
+ {k:'Parte 4 · SIMULAZIONE', t:"60'", scena:'Sul proiettore: schermata simulazione col timer a round. Schede stampate distribuite.',
+  b:[['Setup (10\')','Leggi insieme la pagina "Come si gioca". Consegna: schede ruolo (1 per gruppo, sezioni 🔒 segrete), foglio dati (a tutti), contratto (tavolo centrale). Avvia il timer: le fasi cambiano da sole.'],
+     ['Round 1 (10\') — Stack','Lancia: «TerraProof, presentate le offerte. Verificatore: quanti crediti emettereste con ciascuna?» Aspetta la bomba del verificatore (±35% = rischio di non certificare). Se si bloccano: «chi beneficia della precisione? Forse non solo l\'agricoltore…»'],
+     ['Round 2 (10\') — Dati','Lancia: «i sensori sono nel campo di Valdichiara, ma i dati stanno sui server di TerraProof. Di chi sono?» Se nessuno lo dice, chiedi: «cosa può fare TerraProof coi dati aggregati di 100 aziende?» (allenare i modelli: è il suo vero asset).'],
+     ['Round 3 (10\') — Registro','Lancia: «Buongusto, tre anni fa vi hanno accusato di crediti fantasma. Cosa vi serve perché non riaccada?» Aspetta la domanda dell\'oracolo dal verificatore (è nella sua scheda). Se non arriva entro 5\', lanciala tu.'],
+     ['Round 4 (15\'+5\') — Contratto','Tutti al tavolo del notaio: si compila il contratto voce per voce, conti ad alta voce. Spazio dell\'accordo: B+D2+R2 → 180×50=9.000 €; costi 6.800 €; l\'agricoltore firma solo sopra 3.500 € netti → serve il co-finanziamento del buyer. Più soluzioni possibili: va bene così. Ultimi 5\': firme.']]},
+ {k:'Parte 4 · Debrief', t:"10'", scena:'Sul proiettore: schermata debrief + QR feedback (codice <b>7577 1443</b>).',
+  b:[['Giro di tavoli (4\')','Un minuto a gruppo: «la decisione più difficile e perché».'],
+     ['Domande guida (3\')','Quanto avete pagato ogni punto di incertezza in meno? Di chi sono i dati del campo? Il registro blockchain valeva 800 €? Chi temeva lo smart contract?'],
+     ['Feedback (2\')','QR del questionario: 3 slide (approfondire / rivedere / autovalutazione). Scorri i risultati in diretta e commenta la slide "cosa rivedere".'],
+     ['Chiusura (1\')','La frase da lavagna: <b>il sensore misura, l\'AI stima, la blockchain certifica e paga — ma è il suolo che sequestra.</b>']]}
+];
+let i=0;
+const main=document.getElementById('main');
+function render(){
+  const s=S[i];
+  main.innerHTML=`<p class="kick">${s.k}</p><h2>${s.k.split('·').pop().trim()}</h2>
+    ${s.t?`<span class="time-badge">⏱ ${s.t}</span>`:'<div style="height:10px"></div>'}
+    <div class="scena">🖥️ ${s.scena}</div>`+
+    s.b.map(b=>`<div class="bub"><span class="who">${b[0]}</span>${b[1]}</div>`).join('');
+  document.getElementById('where').textContent=(i+1)+' / '+S.length;
+  document.getElementById('barfill').style.width=(i/(S.length-1)*100)+'%';
+  main.scrollTop=0;
+}
+document.getElementById('next').onclick=()=>{if(i<S.length-1){i++;render();}};
+document.getElementById('prev').onclick=()=>{if(i>0){i--;render();}};
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight') document.getElementById('next').click();
+  if(e.key==='ArrowLeft') document.getElementById('prev').click();
+});
+/* swipe */
+let x0=null;
+document.addEventListener('touchstart',e=>x0=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{
+  if(x0===null) return;
+  const dx=e.changedTouches[0].clientX-x0;
+  if(dx<-60) document.getElementById('next').click();
+  if(dx>60) document.getElementById('prev').click();
+  x0=null;
+});
+/* lesson clock */
+const t0=Date.now();
+setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);
+  document.getElementById('clock').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');},1000);
+render();
+</script>
+</body>
+</html>
